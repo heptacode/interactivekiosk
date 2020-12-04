@@ -1,7 +1,7 @@
 <template>
 	<div class="home">
 		<AppButton @click="testClick">테스트</AppButton>
-		<STT :isRecord="isRecord" :callback="callback"></STT>
+		<STT v-model="isRecord" @record="callback"></STT>
 	</div>
 </template>
 
@@ -31,7 +31,7 @@ export default class Home extends Vue {
 	}
 	callback(text: string) {
 		// 녹음 완료 시 props로 받은 callback 호출
-		console.log(text);
+		console.log(`콜백: ${text}`);
 	}
 }
 </script>
