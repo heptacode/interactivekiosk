@@ -13,8 +13,6 @@
 	"main": "background.js",
 	"dependencies": {
 		"@iconify/iconify": "^1.0.7",
-		"@material/button": "^8.0.0",
-		"@material/ripple": "^8.0.0",
 		"axios": "^0.21.0",
 		"core-js": "^3.6.5",
 		"crypto-js": "^4.0.0",

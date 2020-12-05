@@ -13,6 +13,11 @@ export default class AppButton extends Vue {}
 
 <style lang="scss" scoped>
 .app-button {
+	border: none;
+	outline: none;
+	cursor: pointer;
+	-webkit-user-select: none;
+
 	font-size: 1em;
 	padding: 10px;
 

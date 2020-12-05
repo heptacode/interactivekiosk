@@ -27,6 +27,9 @@ async function createWindow() {
 		win.show();
 		askForMediaAccess();
 	});
+	win.once("close", () => {
+		app.exit();
+	});
 
 	if (process.env.WEBPACK_DEV_SERVER_URL) {
 		// Load the url of the dev server if in development mode

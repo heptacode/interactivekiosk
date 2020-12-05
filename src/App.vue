@@ -2,7 +2,7 @@
 	<div id="app">
 		<div class="topbar">
 			<div class="actions">
-				<button class="close" @click="closeApp" v-if="!isMac"></button>
+				<button class="close" @mousedown="closeApp" v-if="!isMac"></button>
 			</div>
 			<div class="menu">
 				<i data-icon="mdi-account-voice" class="iconify" />
@@ -16,10 +16,6 @@
 			<span class="path">{{ getRouterName }}</span>
 		</header>
 		<div class="content">
-			<button class="foo-button mdc-button">
-				<div class="mdc-button__ripple"></div>
-				<span class="mdc-button__label">Button</span>
-			</button>
 			<router-view />
 		</div>
 	</div>
@@ -52,18 +48,15 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-@use '@material/button/mdc-button';
-@use '@material/button';
-
-@include button.core-styles;
-
 * {
 	margin: 0;
 	padding: 0;
 
 	box-sizing: border-box;
 }
-
+button {
+	border: none;
+}
 ::-webkit-scrollbar {
 	width: 5px;
 	height: 5px;
@@ -78,13 +71,6 @@ export default class App extends Vue {
 	width: 5px;
 	height: 5px;
 	background-color: #dddddd;
-}
-
-button {
-	border: none;
-	outline: none;
-	cursor: pointer;
-	-webkit-user-select: none;
 }
 
 html {
@@ -116,6 +102,8 @@ html {
 			display: flex;
 			justify-content: flex-end;
 			.close {
+				-webkit-app-region: no-drag;
+
 				cursor: pointer;
 				background-color: #aa3333;
 
