@@ -1,15 +1,28 @@
 <template>
 	<div class="order">
 		<div class="stock-list">
-			<div v-for="(stock, idx) in stockList" :key="idx" class="stock-item" @click="buyStockItem(stock)">
-				<div class="stock-item__imagebox">
-					<img :src="`assets/products/${stock.image}`" alt="" />
-				</div>
-				<h3 class="stock-item__name">{{ stock.name }}</h3>
-				<p class="stock-item__price">{{ stock.price }}원</p>
+			<div v-for="(stock, idx) in stockList" :key="idx" @click="buyStockItem(stock)">
+				<md-card md-with-hover class="stock-item">
+					<md-ripple>
+						<md-card-media md-ratio="16:9">
+							<img :src="`assets/products/${stock.image}`" />
+						</md-card-media>
+						<md-card-header>
+							<div class="md-title">{{ stock.name }}</div>
+							<div class="md-subhead">{{ stock.quantity }}</div>
+						</md-card-header>
+
+						<md-card-content> {{ stock.price }} 원</md-card-content>
+
+						<!-- <md-card-actions>
+							<md-button>-</md-button>
+							<md-button>+</md-button>
+						</md-card-actions> -->
+					</md-ripple>
+				</md-card>
 			</div>
 		</div>
-		<div class="stock-buylist" v-if="buyStockList.length">
+		<md-card md-with-hover class="stock-buylist" v-if="buyStockList.length">
 			<div class="stock-buyitem" v-for="(stock, idx) in buyStockList" :key="idx">
 				<div class="stock-buyitem__imagebox">
 					<img :src="`assets/products/${stock.image}`" alt="" />
@@ -20,7 +33,7 @@
 				</button>
 			</div>
 			<app-button class="submit" @click="submit">주문하기</app-button>
-		</div>
+		</md-card>
 	</div>
 </template>
 
@@ -75,52 +88,6 @@ export default class Order extends Vue {
 		column-gap: 30px;
 
 		.stock-item {
-			cursor: pointer;
-			-webkit-user-select: none;
-
-			display: flex;
-			flex-direction: column;
-
-			overflow: hidden;
-
-			border-radius: 20px;
-			background: linear-gradient(145deg, #e6e6e6, #ffffff);
-			box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
-
-			padding: 20px;
-
-			&:active {
-				background: #eeeeee;
-				box-shadow: inset 6px 6px 12px #c2c2c2, inset -6px -6px 12px #ffffff;
-			}
-
-			.stock-item__imagebox {
-				width: 100%;
-				height: 25vw;
-
-				background-color: #aaaaaa;
-
-				border-radius: 20px;
-
-				display: flex;
-				justify-content: center;
-				align-items: center;
-
-				overflow: hidden;
-				img {
-					-webkit-user-drag: none;
-					height: 100%;
-				}
-			}
-			.stock-item__name {
-				margin-top: 20px;
-
-				font-size: 1.5em;
-			}
-			.stock-item__price {
-				margin-top: 5px;
-				font-size: 1.2em;
-			}
 		}
 	}
 
@@ -134,9 +101,7 @@ export default class Order extends Vue {
 		display: flex;
 		flex-direction: column;
 
-		border-radius: 0 20px 0 0;
-		background: linear-gradient(145deg, #e6e6e6, #ffffff);
-		box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
+		z-index: 1000;
 
 		.stock-buyitem {
 			position: relative;
@@ -177,7 +142,7 @@ export default class Order extends Vue {
 
 				border-radius: 100%;
 
-				background-color: #aa3333;
+				background-color: #cc6666;
 				color: white;
 			}
 		}
