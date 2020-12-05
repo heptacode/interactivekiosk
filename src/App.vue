@@ -46,6 +46,10 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
+@use "@material/button";
+
+// @include button.core-styles;
+
 * {
 	margin: 0;
 	padding: 0;
