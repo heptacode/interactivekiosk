@@ -9,8 +9,8 @@
 				<p class="stock-item__price">{{ stock.price }}원</p>
 			</div>
 		</div>
-		<div class="stock-buylist" v-if="stockBuyList.length">
-			<div class="stock-buyitem" v-for="(stock, idx) in stockBuyList" :key="idx">
+		<div class="stock-buylist" v-if="buyStockList.length">
+			<div class="stock-buyitem" v-for="(stock, idx) in buyStockList" :key="idx">
 				<div class="stock-buyitem__imagebox">
 					<img :src="`assets/products/${stock.image}`" alt="" />
 				</div>
@@ -31,6 +31,8 @@ import AppButton from "@/components/AppButton.vue";
 import STT from "@/components/util/STT.vue";
 
 import { StockItem } from "@/schema";
+import { mapState } from "vuex";
+import { State } from "vuex-class";
 
 @Component({
 	components: {
@@ -38,29 +40,26 @@ import { StockItem } from "@/schema";
 	},
 })
 export default class Order extends Vue {
-	stockBuyList: StockItem[] = [];
+	buyStockList: StockItem[] = [];
 
-	// store의 stockList를 가져옴
-	get stockList(): StockItem[] {
-		return this.$store.state.stockList;
-	}
+	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
 
 	// 아이템 구매 로직
 	buyStockItem(stock: StockItem) {
-		let prevStock = this.stockBuyList.find((s) => s.name == stock.name);
+		let prevStock = this.buyStockList.find((s) => s.name == stock.name);
 		// 이미 장바구니에 있을 시 갯수 +1
 		if (prevStock) {
 			// 남은 재고량 확인 후 ++
 			if (this.stockList.find((s) => s.name == stock.name)!.quantity > prevStock.quantity) prevStock.quantity++;
-		} else this.stockBuyList.push({ ...stock, quantity: 1 });
+		} else this.buyStockList.push({ ...stock, quantity: 1 });
 	}
 	removeStockItem(stock: StockItem) {
-		let prevStockIdx = this.stockBuyList.findIndex((s) => s.name == stock.name);
-		if (prevStockIdx != -1) this.stockBuyList.splice(prevStockIdx, 1);
+		let prevStockIdx = this.buyStockList.findIndex((s) => s.name == stock.name);
+		if (prevStockIdx != -1) this.buyStockList.splice(prevStockIdx, 1);
 	}
 
 	submit() {
-		// TODO: 구매 (stockBuyList)
+		// TODO: 구매 (buyStockList)
 	}
 }
 </script>

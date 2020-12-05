@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="actions">
-			<app-button class="app-button long" disabled="ture">이어폰 감지 활성화</app-button>
+			<app-button class="app-button long" @click="getEarphoneDetection = true" :disabled="getEarphoneDetection">이어폰 감지 활성화</app-button>
 			<app-button class="app-button">도움 요청</app-button>
 			<app-button class="app-button">관리하기</app-button>
 			<app-button class="app-button long" @click="$router.push('order')">시작하기</app-button>
@@ -25,13 +25,40 @@
 <script lang="ts">
 import AppButton from "@/components/AppButton.vue";
 import { Component, Vue } from "vue-property-decorator";
+import { Action } from "vuex-class";
 
 @Component({
 	components: {
 		AppButton,
 	},
 })
-export default class Home extends Vue {}
+export default class Home extends Vue {
+	getEarphoneDetection: boolean = false;
+
+	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
+
+	mounted() {
+		navigator.mediaDevices.addEventListener("devicechange", (event) => {
+			if (this.getEarphoneDetection)
+				try {
+					this.$router.replace("/voiceorder");
+				} catch (err) {
+					console.error(err);
+				}
+		});
+
+		const loopHello = async () => {
+			if (this.getEarphoneDetection) {
+				await this.playAudio({ isLocal: true, url: "home/hello" });
+			}
+			setTimeout(async () => {
+				loopHello();
+			}, 2000);
+			return;
+		};
+		loopHello();
+	}
+}
 </script>
 
 <style lang="scss" scoped>

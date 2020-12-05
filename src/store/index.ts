@@ -1,71 +1,20 @@
 import Vue from "vue";
-import Vuex from "vuex";
+import Vuex, { StoreOptions } from "vuex";
 
 import CryptoJS from "crypto-js";
 import axios from "axios";
 import { StockItem } from "@/schema";
 
+import AudioModule, { IAudioModule } from "./modules/AudioModule";
+import StockListModule, { IStockListModule } from "./modules/StockListModule";
+
 Vue.use(Vuex);
 
-export default new Vuex.Store({
-	state: {
-		audio: new Audio() as HTMLAudioElement,
-		stockList: [
-			{
-				name: "사과",
-				alias: ["사과", "사가"],
-				price: 1000,
-				quantity: 10,
-				image: "apple.jpg",
-			},
-			{
-				name: "라면",
-				alias: ["라면", "라멘", "나면"],
-				price: 500,
-				quantity: 10,
-				image: "ramen.jpg",
-			},
-			{
-				name: "파스타",
-				alias: ["파스타", "스파게티", "스파게리", "수파게티", "파수타"],
-				price: 10000,
-				quantity: 10,
-				image: "pasta.jpg",
-			},
-			{
-				name: "복숭아",
-				alias: ["복숭아", "봉숭아", "보숭아", "보숭이", "복숭", "보숭"],
-				price: 2000,
-				quantity: 10,
-				image: "peach.jpg",
-			},
-			{
-				name: "우유",
-				alias: ["우유", "우우", "유유", "으유"],
-				price: 3500,
-				quantity: 10,
-				image: "milk.jpg",
-			},
-		] as StockItem[],
-	},
+export interface RootState {}
+
+const store: StoreOptions<RootState> = {
 	mutations: {},
 	actions: {
-		playAudio({ state }, data: { isLocal: boolean; url: string }): Promise<boolean> {
-			let audio = state.audio;
-			audio.pause();
-
-			let url: string = data.isLocal ? `/assets/sound/${data.url}.mp3` : data.url;
-			audio = new Audio(url);
-
-			audio.play();
-
-			return new Promise<boolean>((resolve) => {
-				audio.addEventListener("ended", () => {
-					URL.revokeObjectURL(url);
-					setTimeout(() => resolve(true), 400);
-				});
-			});
-		},
 		async STT({}, data: Blob): Promise<string> {
 			return (
 				await axios.post("https://naveropenapi.apigw.ntruss.com/recog/v1/stt", data, {
@@ -95,11 +44,16 @@ export default new Vuex.Store({
 				).data;
 
 				let url = URL.createObjectURL(result);
-				return await this.dispatch("playAudio", { isLocal: false, url });
+				return await this.dispatch("AudioModule/playAudio", { isLocal: false, url });
 			} catch (err) {
 				console.error(err);
 			}
 		},
 	},
-	modules: {},
-});
+	modules: {
+		AudioModule,
+		StockListModule,
+	},
+};
+
+export default new Vuex.Store(store);

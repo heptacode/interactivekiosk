@@ -36,6 +36,7 @@ export default class App extends Vue {
 
 	// 맥인지 확인
 	get isMac() {
+		console.log(process.platform);
 		return process.platform === "darwin";
 	}
 
@@ -43,6 +44,7 @@ export default class App extends Vue {
 	get getRouterName() {
 		let routerNameToKoreanName: { [key in string]: string } = {
 			Order: "주문하기",
+			VoiceOrder: "음성으로 주문하기",
 		};
 		return routerNameToKoreanName[this.$route.name as string] || this.$route.name;
 	}
@@ -121,7 +123,9 @@ html {
 
 				width: 20px;
 				height: 20px;
+				z-index: 10000;
 			}
+			z-index: 1000;
 		}
 		.menu {
 			display: flex;
