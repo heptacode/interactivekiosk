@@ -91,6 +91,9 @@ html {
 		display: flex;
 		flex-direction: column;
 
+		-webkit-user-select: none;
+		-webkit-app-region: drag;
+
 		color: white;
 		background-color: #1c1b29;
 

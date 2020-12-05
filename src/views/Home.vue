@@ -160,10 +160,9 @@ export default class Home extends Vue {
 		.long {
 			grid-column: 1 / 3;
 		}
-		// .app-button {
-		// 	font-size: 1.5em;
-		// 	padding: 15px 65px;
-		// }
+		.app-button {
+			/* font-size: 1.5em; */
+		}
 	}
 }
 </style>
