@@ -23,7 +23,6 @@
 </template>
 
 <script lang="ts">
-import AppButton from "@/components/AppButton.vue";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Action, Mutation, State } from "vuex-class";
 
