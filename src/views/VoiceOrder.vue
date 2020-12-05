@@ -35,7 +35,7 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
-		await this.playAudio({ isLocal: true, url: "voiceorder/earphone_connected" });
+		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
 		this.isSpeakable = true;
 	}
 	activatePTT(event: KeyboardEvent) {
@@ -43,7 +43,7 @@ export default class VoiceOrder extends Vue {
 			if (event.code !== "Space" || this.isRecord || !this.isSpeakable) return;
 			this.isRecord = true;
 			this.isSpeakable = false;
-			this.playAudio({ isLocal: true, url: "voiceorder/ptt_activate" });
+			this.playAudio({ isLocal: true, data: "voiceorder/ptt_activate" });
 		}
 	}
 
@@ -51,7 +51,7 @@ export default class VoiceOrder extends Vue {
 		if (!this.isEnd) {
 			if (event.code !== "Space" || !this.isRecord) return;
 			this.isRecord = false;
-			this.playAudio({ isLocal: true, url: "voiceorder/ptt_deactivate" });
+			this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
 		}
 	}
 
@@ -59,7 +59,7 @@ export default class VoiceOrder extends Vue {
 		let unavailableItems: StockItem[] = []; // 주문 불가능한 상품
 
 		if (text == "완료") {
-			return this.submit();
+			return this.checkout();
 		}
 
 		try {
@@ -109,18 +109,19 @@ export default class VoiceOrder extends Vue {
 			await this.TTS(clearStr);
 		} catch (err) {
 			console.error(err);
-			await this.playAudio({ isLocal: true, url: "voiceorder/error" });
+			await this.playAudio({ isLocal: true, data: "voiceorder/error" });
 		}
 		this.isSpeakable = true;
 	}
-	async submit() {
+
+	async checkout() {
 		this.isRecord = false;
 		this.isSpeakable = false;
 		this.isEnd = true;
 
 		// TODO: 결제 (buyStockList)
 
-		await this.playAudio({ isLocal: true, url: "voiceorder/checkout_complete" });
+		await this.playAudio({ isLocal: true, data: "voiceorder/checkout_complete" });
 	}
 }
 </script>

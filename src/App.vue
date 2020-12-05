@@ -74,6 +74,9 @@ button {
 }
 
 html {
+	-webkit-user-select: none;
+	user-select: none;
+
 	background-color: #eeeeee;
 }
 #app {
@@ -87,9 +90,6 @@ html {
 
 		display: flex;
 		flex-direction: column;
-
-		-webkit-user-select: none;
-		-webkit-app-region: drag;
 
 		color: white;
 		background-color: #1c1b29;

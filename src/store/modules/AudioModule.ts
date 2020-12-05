@@ -11,12 +11,12 @@ const AudioModule: Module<IAudioModule, RootState> = {
 		audio: new Audio(),
 	},
 	actions: {
-		playAudio({ state }, data: { isLocal: boolean; url: string }): Promise<boolean> {
+		playAudio({ state }, data: { isLocal: boolean; data: string }): Promise<boolean> {
 			console.log(data);
 			let audio = state.audio;
 			audio.pause();
 
-			let url: string = data.isLocal ? `/assets/sound/${data.url}.mp3` : data.url;
+			let url: string = data.isLocal ? `/assets/sound/${data.data}.mp3` : data.data;
 			audio = new Audio(url);
 
 			audio.play();

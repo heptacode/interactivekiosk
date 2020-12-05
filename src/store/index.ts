@@ -10,10 +10,21 @@ import StockListModule, { IStockListModule } from "./modules/StockListModule";
 
 Vue.use(Vuex);
 
-export interface RootState {}
+export interface RootState {
+	isElectron: boolean;
+	earphoneDetection: boolean;
+}
 
 const store: StoreOptions<RootState> = {
-	mutations: {},
+	state: {
+		isElectron: process.env.IS_ELECTRON ? true : false,
+		earphoneDetection: false,
+	},
+	mutations: {
+		activateEarphoneDetection(state) {
+			state.earphoneDetection = true;
+		},
+	},
 	actions: {
 		async STT({}, data: Blob): Promise<string> {
 			return (
@@ -44,7 +55,7 @@ const store: StoreOptions<RootState> = {
 				).data;
 
 				let url = URL.createObjectURL(result);
-				return await this.dispatch("AudioModule/playAudio", { isLocal: false, url });
+				return await this.dispatch("AudioModule/playAudio", { isLocal: false, data: url });
 			} catch (err) {
 				console.error(err);
 			}

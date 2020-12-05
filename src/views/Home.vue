@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="actions">
-			<app-button class="app-button long" @click="getEarphoneDetection = true" :disabled="getEarphoneDetection">이어폰 감지 활성화</app-button>
+			<app-button v-if="isElectron && !earphoneDetection" class="app-button long" @click="activateEarphoneDetection">이어폰 감지 활성화</app-button>
 			<app-button class="app-button">도움 요청</app-button>
 			<app-button class="app-button">관리하기</app-button>
 			<app-button class="app-button long" @click="$router.push('order')">시작하기</app-button>
@@ -24,8 +24,8 @@
 
 <script lang="ts">
 import AppButton from "@/components/AppButton.vue";
-import { Component, Vue } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { Component, Vue, Watch } from "vue-property-decorator";
+import { Action, Mutation, State } from "vuex-class";
 
 @Component({
 	components: {
@@ -33,32 +33,40 @@ import { Action } from "vuex-class";
 	},
 })
 export default class Home extends Vue {
-	getEarphoneDetection: boolean = false;
+	@State("isElectron") isElectron!: boolean;
+	@State("earphoneDetection") earphoneDetection!: boolean;
+
+	@Mutation("activateEarphoneDetection") activateEarphoneDetection!: Function;
 
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 
+	@Watch("earphoneDetection")
+	changeEarphoneDetection() {
+		if (!this.earphoneDetection) return;
+		this.playAudio({ isLocal: true, data: "home/detection_activated" });
+	}
+
 	mounted() {
 		navigator.mediaDevices.addEventListener("devicechange", (event) => {
-			if (this.getEarphoneDetection)
+			if (this.earphoneDetection)
 				try {
 					this.$router.replace("/voiceorder");
 				} catch (err) {
 					console.error(err);
 				}
 		});
-
-		const loopHello = async () => {
-			if (this.getEarphoneDetection) {
-				await this.playAudio({ isLocal: true, url: "home/hello" });
-			}
-			setTimeout(async () => {
-				loopHello();
-			}, 2000);
-			return;
-		};
-		loopHello();
 	}
 }
+// const loopHello = async () => {
+// 	if (this.getEarphoneDetection) {
+// 		await this.playAudio({ isLocal: true, url: "home/hello" });
+// 	}
+// 	setTimeout(async () => {
+// 		loopHello();
+// 	}, 2000);
+// 	return;
+// };
+// loopHello();
 </script>
 
 <style lang="scss" scoped>
@@ -152,10 +160,10 @@ export default class Home extends Vue {
 		.long {
 			grid-column: 1 / 3;
 		}
-		.app-button {
-			font-size: 1.5em;
-			padding: 15px 65px;
-		}
+		// .app-button {
+		// 	font-size: 1.5em;
+		// 	padding: 15px 65px;
+		// }
 	}
 }
 </style>

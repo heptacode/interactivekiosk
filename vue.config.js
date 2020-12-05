@@ -8,7 +8,7 @@ module.exports = {
 	// },
 	pwa: {
 		name: "Interactive Kiosk",
-		themeColor: "#F6CB4C",
+		themeColor: "#538fff",
 		workboxPluginMode: "InjectManifest",
 		workboxOptions: {
 			swSrc: "public/service-worker.js",
