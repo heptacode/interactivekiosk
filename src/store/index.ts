@@ -44,7 +44,7 @@ const store: StoreOptions<RootState> = {
 				).data;
 
 				let url = URL.createObjectURL(result);
-				return await this.dispatch("playAudio", { isLocal: false, url });
+				return await this.dispatch("AudioModule/playAudio", { isLocal: false, url });
 			} catch (err) {
 				console.error(err);
 			}
