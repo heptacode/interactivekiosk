@@ -1,5 +1,5 @@
 <template>
-	<md-button class="app-button md-raised md-primary" v-bind="$props" v-on="$listeners">
+	<md-button class="md-raised md-primary app-button" v-bind="$props" v-on="$listeners">
 		<slot></slot>
 	</md-button>
 </template>

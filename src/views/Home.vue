@@ -14,10 +14,9 @@
 			</div>
 		</div>
 		<div class="actions">
-			<app-button v-if="isElectron && !earphoneDetection" class="app-button long" @click="activateEarphoneDetection">이어폰 감지 활성화</app-button>
+			<app-button v-if="isElectron && !earphoneDetection" class="app-button" @click="activateEarphoneDetection">이어폰 감지 활성화</app-button>
 			<app-button class="app-button">도움 요청</app-button>
-			<app-button class="app-button">관리하기</app-button>
-			<app-button class="app-button long" @click="$router.push('order')">시작하기</app-button>
+			<app-button class="app-button" @click="$router.push('order')">시작하기</app-button>
 		</div>
 	</div>
 </template>
@@ -150,18 +149,16 @@ export default class Home extends Vue {
 		}
 	}
 	.actions {
-		margin-top: 40px;
+		display: flex;
+		flex-direction: column;
+		padding-top: 30px;
 
-		display: grid;
-
-		row-gap: 20px;
-		column-gap: 20px;
-
-		.long {
-			grid-column: 1 / 3;
-		}
+		width: 100%;
+		max-width: 500px;
 		.app-button {
-			/* font-size: 1.5em; */
+			font-size: 1.2em;
+			height: 50px;
+			margin: 10px;
 		}
 	}
 }
