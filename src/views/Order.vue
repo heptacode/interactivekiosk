@@ -9,12 +9,15 @@
 				<p class="stock-item__price">{{ stock.price }}원</p>
 			</div>
 		</div>
-		<div class="stock-buylist">
+		<div class="stock-buylist" v-if="stockBuyList.length">
 			<div class="stock-buyitem" v-for="(stock, idx) in stockBuyList" :key="idx">
 				<div class="stock-buyitem__imagebox">
 					<img :src="`assets/products/${stock.image}`" alt="" />
 				</div>
 				<p class="stock-buyitem__info">{{ stock.name }} x {{ stock.quantity }} - {{ stock.price * stock.quantity }}원</p>
+				<button class="stock-buyitem__remove" @click="removeStockItem(stock)">
+					<i data-icon="mdi-close" class="iconify" />
+				</button>
 			</div>
 			<app-button class="submit" @click="submit">주문하기</app-button>
 		</div>
@@ -45,12 +48,19 @@ export default class Order extends Vue {
 	// 아이템 구매 로직
 	buyStockItem(stock: StockItem) {
 		let prevStock = this.stockBuyList.find((s) => s.name == stock.name);
-		if (prevStock) prevStock.quantity++;
-		else this.stockBuyList.push({ ...stock, quantity: 1 });
+		// 이미 장바구니에 있을 시 갯수 +1
+		if (prevStock) {
+			// 남은 재고량 확인 후 ++
+			if (this.stockList.find((s) => s.name == stock.name)!.quantity > prevStock.quantity) prevStock.quantity++;
+		} else this.stockBuyList.push({ ...stock, quantity: 1 });
+	}
+	removeStockItem(stock: StockItem) {
+		let prevStockIdx = this.stockBuyList.findIndex((s) => s.name == stock.name);
+		if (prevStockIdx != -1) this.stockBuyList.splice(prevStockIdx, 1);
 	}
 
 	submit() {
-		// TODO: 구매
+		// TODO: 구매 (stockBuyList)
 	}
 }
 </script>
@@ -72,6 +82,7 @@ export default class Order extends Vue {
 
 		.stock-item {
 			cursor: pointer;
+			-webkit-user-select: none;
 
 			display: flex;
 			flex-direction: column;
@@ -134,6 +145,8 @@ export default class Order extends Vue {
 		box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
 
 		.stock-buyitem {
+			position: relative;
+
 			display: flex;
 			align-items: center;
 
@@ -156,6 +169,22 @@ export default class Order extends Vue {
 			.stock-buyitem__info {
 				margin-left: 20px;
 				font-size: 1.2em;
+			}
+			.stock-buyitem__remove {
+				position: absolute;
+				right: 5px;
+				top: 5px;
+
+				padding: 5px;
+
+				display: flex;
+				justify-content: center;
+				align-items: center;
+
+				border-radius: 100%;
+
+				background-color: #aa3333;
+				color: white;
 			}
 		}
 
