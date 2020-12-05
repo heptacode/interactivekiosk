@@ -32,6 +32,7 @@ export default class App extends Vue {
 
 	// 맥인지 확인
 	get isMac() {
+		console.log(process.platform);
 		return process.platform === "darwin";
 	}
 

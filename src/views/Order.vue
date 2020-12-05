@@ -31,6 +31,8 @@ import AppButton from "@/components/AppButton.vue";
 import STT from "@/components/util/STT.vue";
 
 import { StockItem } from "@/schema";
+import { mapState } from "vuex";
+import { State } from "vuex-class";
 
 @Component({
 	components: {
@@ -40,10 +42,7 @@ import { StockItem } from "@/schema";
 export default class Order extends Vue {
 	stockBuyList: StockItem[] = [];
 
-	// store의 stockList를 가져옴
-	get stockList(): StockItem[] {
-		return this.$store.state.stockList;
-	}
+	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
 
 	// 아이템 구매 로직
 	buyStockItem(stock: StockItem) {
