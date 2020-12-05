@@ -27,18 +27,13 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import AppButton from "@/components/AppButton.vue";
 import STT from "@/components/util/STT.vue";
 
 import { StockItem } from "@/schema";
 import { mapState } from "vuex";
 import { State } from "vuex-class";
 
-@Component({
-	components: {
-		AppButton,
-	},
-})
+@Component({})
 export default class Order extends Vue {
 	buyStockList: StockItem[] = [];
 

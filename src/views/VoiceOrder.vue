@@ -1,7 +1,16 @@
 <template>
-	<div class="voice-order">
-		<STT v-model="isRecord" @record="parseText"></STT>
+	<div class="voiceorder">
+		<div class="indicator">
+			<span v-if="isSpeakable">
+				<i class="iconify" data-icon="mdi:microphone"></i>
+			</span>
+			<span v-else>
+				<i class="iconify" data-icon="mdi:microphone-off"></i>
+			</span>
+		</div>
 		{{ buyStockList }}
+
+		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
 </template>
 
@@ -25,9 +34,9 @@ export default class VoiceOrder extends Vue {
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 	@Action("TTS") TTS!: Function;
 
-	isRecord: boolean = false;
+	isRecording: boolean = false;
 	isSpeakable: boolean = false;
-	isEnd: boolean = false;
+	isOrderProcess: boolean = false;
 
 	buyStockList: StockItem[] = []; // 현 주문 상품
 
@@ -35,32 +44,26 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
-		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		this.isSpeakable = true;
+		// await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
+		// this.isSpeakable = true;
 	}
 	activatePTT(event: KeyboardEvent) {
-		if (!this.isEnd) {
-			if (event.code !== "Space" || this.isRecord || !this.isSpeakable) return;
-			this.isRecord = true;
-			this.isSpeakable = false;
-			this.playAudio({ isLocal: true, data: "voiceorder/ptt_activate" });
-		}
+		if (event.code !== "Space" || this.isRecording || !this.isSpeakable || !this.isOrderProcess) return;
+		this.isRecording = true;
+		this.isSpeakable = false;
+		this.playAudio({ isLocal: true, data: "voiceorder/ptt_activate" });
 	}
 
 	deactivatePTT(event: KeyboardEvent) {
-		if (!this.isEnd) {
-			if (event.code !== "Space" || !this.isRecord) return;
-			this.isRecord = false;
-			this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
-		}
+		if (event.code !== "Space" || !this.isRecording || !this.isOrderProcess) return;
+		this.isRecording = false;
+		this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
 	}
 
 	async parseText(text: string) {
 		let unavailableItems: StockItem[] = []; // 주문 불가능한 상품
 
-		if (text == "완료") {
-			return this.checkout();
-		}
+		if (text == "완료" || text == "종료") return this.checkout();
 
 		try {
 			let reg = new RegExp(
@@ -115,7 +118,7 @@ export default class VoiceOrder extends Vue {
 	}
 
 	async checkout() {
-		this.isRecord = false;
+		this.isRecording = false;
 		this.isSpeakable = false;
 		this.isEnd = true;
 
@@ -126,4 +129,14 @@ export default class VoiceOrder extends Vue {
 }
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.voiceorder {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+
+	.indicator {
+	}
+}
+</style>
