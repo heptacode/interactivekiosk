@@ -27,11 +27,7 @@ import AppButton from "@/components/AppButton.vue";
 import { Component, Vue, Watch } from "vue-property-decorator";
 import { Action, Mutation, State } from "vuex-class";
 
-@Component({
-	components: {
-		AppButton,
-	},
-})
+@Component({})
 export default class Home extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("earphoneDetection") earphoneDetection!: boolean;
