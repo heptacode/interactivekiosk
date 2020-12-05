@@ -4,6 +4,7 @@ import "./registerServiceWorker";
 import router from "./router";
 import store from "./store";
 
+import { MDCRipple } from "@material/ripple";
 import "@iconify/iconify";
 
 Vue.config.productionTip = false;
