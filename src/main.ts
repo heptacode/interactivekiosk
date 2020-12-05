@@ -7,6 +7,8 @@ import store from "./store";
 import { MDCRipple } from "@material/ripple";
 import "@iconify/iconify";
 
+// Vue.use(MDCRipple);
+
 Vue.config.productionTip = false;
 
 new Vue({

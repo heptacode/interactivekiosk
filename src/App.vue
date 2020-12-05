@@ -16,6 +16,10 @@
 			<span class="path">{{ getRouterName }}</span>
 		</header>
 		<div class="content">
+			<button class="foo-button mdc-button">
+				<div class="mdc-button__ripple"></div>
+				<span class="mdc-button__label">Button</span>
+			</button>
 			<router-view />
 		</div>
 	</div>
@@ -46,9 +50,10 @@ export default class App extends Vue {
 </script>
 
 <style lang="scss">
-@use "@material/button";
+@use '@material/button/mdc-button';
+@use '@material/button';
 
-// @include button.core-styles;
+@include button.core-styles;
 
 * {
 	margin: 0;
