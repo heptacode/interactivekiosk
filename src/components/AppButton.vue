@@ -13,32 +13,23 @@ export default class AppButton extends Vue {}
 
 <style lang="scss" scoped>
 .app-button {
-	display: flex;
-	justify-content: center;
-	align-items: center;
+	font-size: 1em;
+	padding: 10px;
 
-	padding: 8px 12px;
+	border-radius: 50px;
+	background: linear-gradient(145deg, #e6e6e6, #ffffff);
+	box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
 
-	border: none;
-	border-radius: 12px;
+	color: #666666;
 
-	background: none;
-	background-color: #f6cb4c;
-
-	font-size: 16px;
-
-	cursor: pointer;
-
-	transition: background 0.1s;
-
-	&:hover {
-		background-color: rgba(#f6cb4c, 0.75);
+	&:active {
+		background: #eeeeee;
+		box-shadow: inset 6px 6px 12px #c2c2c2, inset -6px -6px 12px #ffffff;
 	}
-
 	&:disabled {
-		opacity: 0.8;
-
 		cursor: not-allowed;
+		background: #dddddd;
+		box-shadow: 2px 2px 12px #c2c2c2, -2px -2px 12px #ffffff;
 	}
 }
 </style>

@@ -12,8 +12,10 @@
   },
   "main": "background.js",
   "dependencies": {
+    "@iconify/iconify": "^1.0.7",
     "@types/axios": "^0.14.0",
     "@types/crypto-js": "^4.0.1",
+    "@types/dom-mediacapture-record": "^1.0.7",
     "axios": "^0.21.0",
     "core-js": "^3.6.5",
     "crypto-js": "^4.0.0",

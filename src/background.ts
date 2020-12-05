@@ -13,6 +13,10 @@ async function createWindow() {
 	const win = new BrowserWindow({
 		width: 800,
 		height: 600,
+		center: true,
+		autoHideMenuBar: true,
+		frame: false,
+		titleBarStyle: "hidden",
 		webPreferences: {
 			webSecurity: false,
 			nodeIntegration: true,

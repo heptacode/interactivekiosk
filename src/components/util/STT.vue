@@ -56,14 +56,16 @@ export default class STT extends Vue {
 		console.log("텍스트 변환 시작");
 		try {
 			let text = await this.$store.dispatch("STT", this.blob);
+			console.log(`변환 데이터: ${text}`);
+
 			this.callback && this.callback(text);
 			this.$emit("record", text);
-			console.log(`변환 데이터: ${text}`);
 		} catch (err) {
-			this.callback && this.callback("");
-			this.$emit("record", "");
 			console.log(`변환 데이터: 실패`);
 			console.error(err);
+
+			this.callback && this.callback("");
+			this.$emit("record", "");
 		}
 	}
 }
