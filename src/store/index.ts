@@ -1,11 +1,12 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
 
+import { vuexfireMutations } from "vuexfire";
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import { StockItem } from "@/schema";
 
 import AudioModule, { IAudioModule } from "./modules/AudioModule";
+import FirestoreModule, { IFirestoreModule } from "./modules/FirestoreModule";
 import StockListModule, { IStockListModule } from "./modules/StockListModule";
 
 Vue.use(Vuex);
@@ -24,6 +25,7 @@ const store: StoreOptions<RootState> = {
 		activateEarphoneDetection(state) {
 			state.earphoneDetection = true;
 		},
+		...vuexfireMutations,
 	},
 	actions: {
 		async STT({}, data: Blob): Promise<string> {
@@ -63,6 +65,7 @@ const store: StoreOptions<RootState> = {
 	},
 	modules: {
 		AudioModule,
+		FirestoreModule,
 		StockListModule,
 	},
 };
