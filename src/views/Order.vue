@@ -1,5 +1,5 @@
 <template>
-	<div class="order" :class="{ electron: isElectron }">
+	<div :class="{ order: !isElectron, 'order-electron': isElectron }">
 		<div class="product-container">
 			<div v-for="(item, idx) in stockList" :key="idx" class="product" @click="addItem(item)">
 				<md-card md-with-hover>
@@ -31,17 +31,17 @@
 			</div>
 		</div>
 
-		<div class="fixed-bottom">
-			<app-button v-if="!shoppingCartVisible && shoppingCart.length" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
+		<div class="shoppingCart-container">
+			<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
 				<i class="iconify" data-icon="mdi:chevron-up"></i>
 				장바구니 열기
 			</app-button>
 
 			<!-- <shoppingCart> -->
-			<md-card v-else-if="shoppingCartVisible && shoppingCart.length" class="shoppingCart">
+			<md-card v-else-if="(shoppingCartVisible && shoppingCart.length) || isElectron" class="shoppingCart">
 				<div class="shoppingCart-heading">
 					<h1>장바구니</h1>
-					<app-button class="round" @click="shoppingCartVisible = false">
+					<app-button v-if="!isElectron" class="round" @click="shoppingCartVisible = false">
 						<i class="iconify" data-icon="mdi:chevron-down"></i>
 						숨기기
 					</app-button>
@@ -59,10 +59,12 @@
 					<h4>{{ numberFormat(item.price * item.quantity) }}원</h4>
 				</div>
 
-				<app-button class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
+				<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
 			</md-card>
 			<!-- </shoppingCart> -->
 		</div>
+
+		<div class="sidebar"></div>
 	</div>
 </template>
 
@@ -128,7 +130,8 @@ export default class Order extends Vue {
 .order {
 	display: flex;
 	flex-direction: column;
-	margin-bottom: 80vh;
+
+	height: 100%;
 
 	.product-container {
 		display: flex;
@@ -154,7 +157,7 @@ export default class Order extends Vue {
 			}
 		}
 	}
-	.fixed-bottom {
+	.shoppingCart-container {
 		position: fixed;
 		top: auto;
 		bottom: 0;
@@ -226,79 +229,76 @@ export default class Order extends Vue {
 			}
 		}
 	}
+}
 
-	&.electron {
-		.product-container {
-			padding: 20px;
+.order-electron {
+	display: flex;
+	height: 100%;
 
-			display: grid;
+	.product-container {
+		display: grid;
+		grid-template-columns: 1fr 1fr 1fr;
 
-			grid-template-columns: 1fr 1fr 1fr;
+		row-gap: 30px;
+		column-gap: 30px;
 
-			row-gap: 30px;
-			column-gap: 30px;
-		}
+		width: 70%;
+		height: 100%;
 
-		.shoppingCart {
-			position: absolute;
-			left: 0;
-			bottom: 0;
+		padding: 30px;
 
-			padding: 20px;
-
-			display: flex;
-			flex-direction: column;
-
-			z-index: 1000;
-		}
+		// border-right: 1px solid rgba(0, 0, 0, 0.5);
+		box-shadow: 1px 0 40px rgba(0, 0, 0, 0.1);
 	}
 
-	// .shoppingCart-item {
-	// 	position: relative;
+	.shoppingCart-container {
+		display: flex;
+		flex-direction: column;
 
-	// 	display: flex;
-	// 	align-items: center;
+		position: relative;
 
-	// 	padding: 10px;
+		width: 30%;
+		height: 100%;
 
-	// 	.stock-buyitem__imagebox {
-	// 		width: 4em;
-	// 		height: 4em;
+		padding: 30px;
 
-	// 		border-radius: 20px;
-	// 		background: linear-gradient(145deg, #e6e6e6, #ffffff);
-	// 		box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
+		.shoppingCart {
+			box-shadow: none;
+			background-color: transparent;
 
-	// 		overflow: hidden;
+			.shoppingCart-heading {
+				margin-bottom: 40px;
+				h1 {
+					font-size: 2.5em;
+				}
+			}
 
-	// 		img {
-	// 			height: 100%;
-	// 		}
-	// 	}
-	// 	.stock-buyitem__info {
-	// 		margin-left: 20px;
-	// 		font-size: 1.2em;
-	// 	}
-	// 	.stock-buyitem__remove {
-	// 		position: absolute;
-	// 		right: 5px;
-	// 		top: 5px;
+			.shoppingCart-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
 
-	// 		padding: 5px;
+				padding: 20px 0;
+				border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
 
-	// 		display: flex;
-	// 		justify-content: center;
-	// 		align-items: center;
+				img {
+					width: 50px;
+					height: 50px;
 
-	// 		border-radius: 100%;
+					border-radius: 50%;
+				}
 
-	// 		background-color: #cc6666;
-	// 		color: white;
-	// 	}
-	// }
+				h4 {
+					padding: 0 10px;
+				}
+			}
 
-	// .submit {
-	// 	margin-top: 20px;
-	// }
+			.checkout {
+				margin-top: 40px;
+				width: 100%;
+				height: 50px;
+			}
+		}
+	}
 }
 </style>
