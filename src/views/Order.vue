@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
+import { Component, Watch, Vue } from "vue-property-decorator";
 
 import numberFormat from "@/utils/numberFormat";
 
@@ -80,7 +80,7 @@ import { State } from "vuex-class";
 @Component({})
 export default class Order extends Vue {
 	@State("isElectron") isElectron!: boolean;
-	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
+	@State("stockList") stockList!: StockItem[];
 
 	async created() {
 		await this.$store.dispatch("bindStock");

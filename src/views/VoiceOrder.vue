@@ -29,7 +29,7 @@ const koreanNumber = require("@/lib/koreanNumber.json");
 	},
 })
 export default class VoiceOrder extends Vue {
-	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
+	@State("stockList") stockList!: StockItem[];
 
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 	@Action("TTS") TTS!: Function;
