@@ -247,7 +247,6 @@ export default class Order extends Vue {
 
 		padding: 30px;
 
-		// border-right: 1px solid rgba(0, 0, 0, 0.5);
 		box-shadow: 1px 0 40px rgba(0, 0, 0, 0.1);
 	}
 
@@ -265,6 +264,7 @@ export default class Order extends Vue {
 		.shoppingCart {
 			box-shadow: none;
 			background-color: transparent;
+			margin-top: 20px;
 
 			.shoppingCart-heading {
 				margin-bottom: 40px;
