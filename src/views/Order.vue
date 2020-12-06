@@ -243,7 +243,7 @@ export default class Order extends Vue {
 		column-gap: 30px;
 
 		width: 70%;
-		height: 100%;
+		height: fit-content;
 
 		padding: 30px;
 
