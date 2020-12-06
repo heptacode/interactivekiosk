@@ -82,6 +82,10 @@ export default class Order extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
 
+	async created() {
+		await this.$store.dispatch("bindStock");
+	}
+
 	shoppingCartVisible: boolean = false;
 	shoppingCart: StockItem[] = [];
 

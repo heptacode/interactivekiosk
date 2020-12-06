@@ -1,25 +1,28 @@
 import Vue from "vue";
 import Vuex, { StoreOptions } from "vuex";
+import { StockItem } from "@/schema";
+import { db } from "@/DB";
 
-import { vuexfireMutations } from "vuexfire";
+import { firestoreAction, vuexfireMutations } from "vuexfire";
 import CryptoJS from "crypto-js";
 import axios from "axios";
 
 import AudioModule, { IAudioModule } from "./modules/AudioModule";
 import FirestoreModule, { IFirestoreModule } from "./modules/FirestoreModule";
-import StockListModule, { IStockListModule } from "./modules/StockListModule";
 
 Vue.use(Vuex);
 
 export interface RootState {
 	isElectron: boolean;
 	earphoneDetection: boolean;
+	stockList: StockItem[];
 }
 
 const store: StoreOptions<RootState> = {
 	state: {
 		isElectron: process.env.IS_ELECTRON ? true : false,
 		earphoneDetection: false,
+		stockList: [],
 	},
 	mutations: {
 		activateEarphoneDetection(state) {
@@ -28,6 +31,12 @@ const store: StoreOptions<RootState> = {
 		...vuexfireMutations,
 	},
 	actions: {
+		bindStock: firestoreAction(({ bindFirestoreRef }) => {
+			return bindFirestoreRef("stockList", db.collection("stock"));
+		}),
+		unbindStock: firestoreAction(({ unbindFirestoreRef }) => {
+			unbindFirestoreRef("stockList");
+		}),
 		async STT({}, data: Blob): Promise<string> {
 			return (
 				await axios.post("https://naveropenapi.apigw.ntruss.com/recog/v1/stt", data, {
@@ -66,7 +75,6 @@ const store: StoreOptions<RootState> = {
 	modules: {
 		AudioModule,
 		FirestoreModule,
-		StockListModule,
 	},
 };
 

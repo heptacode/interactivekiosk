@@ -1,34 +1,16 @@
 import { Module } from "vuex";
 import { RootState } from "@/store/index";
 
-import { firestoreAction } from "vuexfire";
 import { db } from "@/DB";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
 
-db.collection("config")
-	.doc("config")
-	.onSnapshot(function(doc) {
-		var source = doc.metadata.hasPendingWrites ? "Local" : "Server";
-		console.log(source, " data: ", doc.data());
-	});
-
 export interface IFirestoreModule {}
 
 const FirestoreModule: Module<IFirestoreModule, RootState> = {
 	namespaced: true,
-	state: {
-		stockList: [],
-	},
 	actions: {
-		bindStock: firestoreAction(({ bindFirestoreRef }) => {
-			// return the promise returned by `bindFirestoreRef`
-			return bindFirestoreRef("stockList", db.collection("stock"));
-		}),
-		unbindStock: firestoreAction(({ unbindFirestoreRef }) => {
-			unbindFirestoreRef("stockList");
-		}),
 		async LOG({}, data: { type: string; message: string }): Promise<void> {
 			try {
 				await db.collection("logs").add({
