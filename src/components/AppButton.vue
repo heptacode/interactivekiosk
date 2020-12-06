@@ -28,6 +28,9 @@ export default class AppButton extends Vue {}
 
 	// color: #666666;
 
+	&.round {
+		border-radius: 20px;
+	}
 	// &:active {
 	// 	background: #eeeeee;
 	// 	box-shadow: inset 6px 6px 12px #c2c2c2, inset -6px -6px 12px #ffffff;

@@ -65,6 +65,7 @@ button {
 html {
 	-webkit-user-select: none;
 	user-select: none;
+	word-break: keep-all;
 
 	background-color: #eeeeee;
 }

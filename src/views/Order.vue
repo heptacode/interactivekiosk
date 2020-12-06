@@ -31,25 +31,38 @@
 			</div>
 		</div>
 
-		<!-- shoppingCart -->
-		<md-card v-if="shoppingCart.length" class="shoppingCart" md-with-hover>
-			<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
-				<img :src="`assets/products/${item.image}`" alt="" />
-				<p class="shoppingCart-item__info">{{ item.name }} x {{ item.quantity }} - {{ item.price * item.quantity }}원</p>
+		<div class="fixed-bottom">
+			<app-button v-if="!shoppingCartVisible && shoppingCart.length" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
+				<i class="iconify" data-icon="mdi:chevron-up"></i>
+				장바구니 열기
+			</app-button>
 
-				<md-card-actions>
-					<md-button>-</md-button>
-					<md-button>+</md-button>
-				</md-card-actions>
-				<div>
-					<button class="shoppingCart-item__decrease" @click="decreaseItem(item)">-</button>
-					{{ item.quantity }}
-					<button class="shoppingCart-item__increase" @click="increaseItem(item)">+</button>
+			<!-- <shoppingCart> -->
+			<md-card v-else-if="shoppingCartVisible && shoppingCart.length" class="shoppingCart">
+				<div class="shoppingCart-heading">
+					<h1>장바구니</h1>
+					<app-button class="round" @click="shoppingCartVisible = false">
+						<i class="iconify" data-icon="mdi:chevron-down"></i>
+						숨기기
+					</app-button>
 				</div>
-				<button class="shoppingCart-item__remove" @click="removeItem(item)"><i class="iconify" data-icon="mdi:trash" />삭제</button>
-			</div>
-			<app-button class="submit" @click="checkout">주문하기</app-button>
-		</md-card>
+
+				<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
+					<img :src="`assets/products/${item.image}`" alt="" />
+					<h2>{{ item.name }}</h2>
+
+					<md-card-actions class="shoppingCart-actions">
+						<app-button class="md-icon-button" @click="decreaseItem(item)">-</app-button>
+						<h4>&times;{{ item.quantity }}</h4>
+						<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
+					</md-card-actions>
+					<h4>{{ numberFormat(item.price * item.quantity) }}원</h4>
+				</div>
+
+				<app-button class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
+			</md-card>
+			<!-- </shoppingCart> -->
+		</div>
 	</div>
 </template>
 
@@ -66,32 +79,43 @@ import { State } from "vuex-class";
 export default class Order extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
+
+	shoppingCartVisible: boolean = false;
 	shoppingCart: StockItem[] = [];
 
 	numberFormat(number: number) {
 		return numberFormat(number);
 	}
 
-	addItem(stock: StockItem) {
-		let prevStock = this.shoppingCart.find((s) => s.name == stock.name);
+	addItem(item: StockItem) {
+		this.shoppingCartVisible = true;
+
+		let prevItem = this.shoppingCart.find((s) => s.name == item.name);
 		// 이미 장바구니에 있을 시 개수 +1
-		if (prevStock) {
+		if (prevItem) {
 			// 남은 재고량 확인 후 증감
-			if (this.stockList.find((s) => s.name == stock.name)!.quantity > prevStock.quantity) prevStock.quantity++;
-		} else this.shoppingCart.push({ ...stock, quantity: 1 });
+			if (this.stockList.find((i) => i.name == item.name)!.quantity > prevItem.quantity) prevItem.quantity++;
+		} else this.shoppingCart.push({ ...item, quantity: 1 });
 	}
-
 	increaseItem(item: StockItem) {
-		// TODO : 장바구니에 담겨있는 제품 수량 증감
+		let prevItem = this.shoppingCart.find((i) => i.name == item.name);
+		if (this.stockList.find((i) => i.name == item.name)!.quantity > prevItem!.quantity) prevItem!.quantity++;
 	}
-
 	decreaseItem(item: StockItem) {
-		// TODO : 장바구니에 담겨있는 제품 수량 차감
+		let prevItem = this.shoppingCart.find((i) => i.name == item.name);
+		if (prevItem!.quantity-- <= 1) this.removeItem(item);
+	}
+	removeItem(item: StockItem) {
+		let prevItemIdx = this.shoppingCart.findIndex((i) => i.name == item.name);
+		if (prevItemIdx != -1) this.shoppingCart.splice(prevItemIdx, 1);
 	}
 
-	removeItem(item: StockItem) {
-		let prevStockIdx = this.shoppingCart.findIndex((s) => s.name == item.name);
-		if (prevStockIdx != -1) this.shoppingCart.splice(prevStockIdx, 1);
+	get getTotalPrice(): string {
+		let total = 0;
+		this.shoppingCart.forEach((i) => {
+			total += i.price * i.quantity;
+		});
+		return numberFormat(total);
 	}
 
 	checkout() {
@@ -109,7 +133,6 @@ export default class Order extends Vue {
 	.product-container {
 		display: flex;
 		flex-direction: column;
-		// justify-content: flex-start;
 		align-items: center;
 
 		.product {
@@ -130,25 +153,78 @@ export default class Order extends Vue {
 				}
 			}
 		}
-		// flex-wrap: wrap;
-		// .product {
-		// 	width: 30%;
+	}
+	.fixed-bottom {
+		position: fixed;
+		top: auto;
+		bottom: 0;
 
-		// 	margin: 10px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
 
-		// 	border: none;
-		// 	border-radius: 20px;
-		// 	box-shadow: 3px 3px 20px rgba($color: #000000, $alpha: 0.1);
+		width: 100%;
+		margin-bottom: 10px;
 
-		// 	.product-group {
-		// 		flex-direction: column;
-		// 		justify-content: center;
-		// 		align-items: center;
+		z-index: 10000;
 
-		// 		.product-innergroup {
-		// 			align-items: center;
-		// 		}
-		// 	}
+		.shoppingCart-toggle {
+			padding: 10px;
+		}
+		.shoppingCart {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			border-radius: 20px;
+
+			width: 80%;
+			max-width: 500px;
+
+			padding: 20px;
+
+			box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.5);
+
+			.shoppingCart-heading {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				width: 100%;
+				margin-bottom: 10px;
+			}
+
+			.shoppingCart-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				width: 100%;
+
+				padding: 10px 0;
+				border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+
+				h2 {
+					padding: 0 4px;
+				}
+				img {
+					width: 50px;
+					height: 50px;
+					border-radius: 50%;
+				}
+			}
+
+			.shoppingCart-actions {
+				h4 {
+					padding: 0 10px;
+				}
+			}
+			.checkout {
+				margin-top: 20px;
+				padding: 10px;
+				align-self: flex-end;
+			}
+		}
 	}
 
 	&.electron {
