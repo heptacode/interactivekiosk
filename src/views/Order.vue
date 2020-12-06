@@ -69,22 +69,17 @@
 </template>
 
 <script lang="ts">
-import { Component, Watch, Vue } from "vue-property-decorator";
-
-import numberFormat from "@/utils/numberFormat";
+import { Component, Vue } from "vue-property-decorator";
 
 import { StockItem } from "@/schema";
-import { mapState } from "vuex";
 import { State } from "vuex-class";
+
+import numberFormat from "@/utils/numberFormat";
 
 @Component({})
 export default class Order extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("stockList") stockList!: StockItem[];
-
-	async created() {
-		await this.$store.dispatch("bindStock");
-	}
 
 	shoppingCartVisible: boolean = false;
 	shoppingCart: StockItem[] = [];

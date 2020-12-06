@@ -4,7 +4,7 @@ export interface StockItem {
 	id: string;
 	name: string;
 	price: number;
-	alias?: string[];
+	alias: string[];
 	quantity: number;
 	image?: string;
 }
