@@ -2,7 +2,7 @@
 	<div id="app">
 		<div class="topbar">
 			<div class="actions">
-				<button class="close" @mousedown="closeApp" v-if="!isMac"></button>
+				<button v-if="isMac" class="close" @mousedown="closeApp"></button>
 			</div>
 			<div class="menu">
 				<i data-icon="mdi-account-voice" class="iconify" />
@@ -13,7 +13,7 @@
 			<router-link to="/" class="path">
 				<i class="iconify path" data-icon="mdi-home" @click="$router.push('/')"></i>
 			</router-link>
-			<span class="path">{{ getRouterName }}</span>
+			<span class="path">{{ $route.name }}</span>
 		</header>
 		<div class="content">
 			<router-view />
@@ -30,19 +30,8 @@ export default class App extends Vue {
 		window.close();
 	}
 
-	// 맥인지 확인
 	get isMac() {
-		console.log(process.platform);
 		return process.platform === "darwin";
-	}
-
-	// 라우터 이름을 감지해서 변경
-	get getRouterName() {
-		let routerNameToKoreanName: { [key in string]: string } = {
-			Order: "주문하기",
-			VoiceOrder: "음성으로 주문하기",
-		};
-		return routerNameToKoreanName[this.$route.name as string] || this.$route.name;
 	}
 }
 </script>
