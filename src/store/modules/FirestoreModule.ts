@@ -5,6 +5,7 @@ import { db } from "@/DB";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
+import { StockItem } from "@/schema";
 
 export interface IFirestoreModule {}
 
@@ -23,7 +24,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 				console.error(`LOG: Unexpected Error While Logging`);
 			}
 		},
-		async CREATE_TRANSACTION({}, data: { type: string; data: object; totalPrice: number }): Promise<boolean> {
+		async CREATE_TRANSACTION({ dispatch }, data: { type: string; data: object; totalPrice: number }): Promise<boolean> {
 			try {
 				return (await db.collection("transactions").add({
 					timestamp: firebase.firestore.FieldValue.serverTimestamp(),
@@ -34,12 +35,12 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 					? true
 					: false;
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `트랜잭션 추가 실패 : ${err}` });
+				await dispatch("LOG", { type: "error", message: `트랜잭션 추가 실패 : ${err}` });
 				return false;
 			}
 		},
 		// Admin
-		async CREATE_ITEM({}, data: { name: string; alias: string[]; price: number; quantity: number; image: string }): Promise<boolean> {
+		async CREATE_ITEM({ dispatch }, data: { name: string; alias: string[]; price: number; quantity: number; image: string }): Promise<boolean> {
 			try {
 				return (await db.collection("stock").add({
 					name: data.name,
@@ -51,37 +52,61 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 					? true
 					: false;
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
+				await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 				return false;
 			}
 		},
-		async UPDATE_ITEM({}, data: { id: string; key: string; item: string | number }): Promise<boolean> {
+		async UPDATE_ITEM({ dispatch }, data: { id: string; key: string; value: string | number }): Promise<boolean> {
 			try {
+				let value =
+					data.key === "alias"
+						? data.value
+								.toString()
+								.trim()
+								.split(",")
+						: data.value;
+
 				await db
 					.collection("stock")
 					.doc(data.id)
 					.update({
-						[data.key]: data.item?.[data.key],
+						[data.key]: value,
 					});
 				return true;
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `UPDATE_ITEM : ${err}` });
+				await dispatch("LOG", { type: "error", message: `UPDATE_ITEM : ${err}` });
 				return false;
 			}
 		},
-		async DELETE_ITEM({}, data: { id: string }): Promise<boolean> {
+		async DUPLICATE_ITEM({ dispatch }, data: { id: string; itemData: StockItem }): Promise<boolean> {
+			try {
+				return (await db.collection("stock").add({
+					name: data.itemData.name,
+					alias: data.itemData.alias,
+					price: data.itemData.price,
+					quantity: data.itemData.quantity,
+					image: data.itemData.image,
+				}))
+					? true
+					: false;
+			} catch (err) {
+				await dispatch("LOG", { type: "error", message: `DUPLICATE_ITEM : ${err}` });
+				return false;
+			}
+		},
+		async DELETE_ITEM({ dispatch }, id: string): Promise<boolean> {
 			try {
 				await db
 					.collection("stock")
-					.doc(data.id)
+					.doc(id)
 					.delete();
 				return true;
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `DELETE_ITEM : ${err}` });
+				await dispatch("LOG", { type: "error", message: `DELETE_ITEM : ${err}` });
 				return false;
 			}
 		},
-		async GET_CONFIG({}): Promise<any> {
+		async GET_CONFIG({ dispatch }): Promise<any> {
 			try {
 				let configDocSnapshot = await db
 					.collection("config")
@@ -89,11 +114,11 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 					.get();
 				return configDocSnapshot.data();
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `GET_CONFIG : ${err}` });
+				await dispatch("LOG", { type: "error", message: `GET_CONFIG : ${err}` });
 				return false;
 			}
 		},
-		async UPDATE_CONFIG({}, data: { key: string; value: string | number }): Promise<boolean> {
+		async UPDATE_CONFIG({ dispatch }, data: { key: string; value: string | number }): Promise<boolean> {
 			try {
 				await db
 					.collection("settings")
@@ -103,7 +128,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 					});
 				return true;
 			} catch (err) {
-				await this.dispatch("LOG", { type: "error", message: `UPDATE_CONFIG : ${err}` });
+				await dispatch("LOG", { type: "error", message: `UPDATE_CONFIG : ${err}` });
 				return false;
 			}
 		},
