@@ -45,7 +45,7 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keyup", this.deactivatePTT);
 
 		// await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		// this.isSpeakable = true;
+		// this.isSpeakable = this.orderProcess = true;
 	}
 	activatePTT(event: KeyboardEvent) {
 		if (event.code !== "Space" || this.isRecording || !this.isSpeakable || !this.isOrderProcess) return;
@@ -120,7 +120,7 @@ export default class VoiceOrder extends Vue {
 	async checkout() {
 		this.isRecording = false;
 		this.isSpeakable = false;
-		this.isEnd = true;
+		this.isOrderProcess = false;
 
 		// TODO: 결제 (buyStockList)
 

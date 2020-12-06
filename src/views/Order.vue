@@ -1,19 +1,27 @@
 <template>
-	<div class="order">
-		<div class="stock-list">
-			<div v-for="(stock, idx) in stockList" :key="idx" @click="buyStockItem(stock)">
-				<md-card md-with-hover class="stock-item">
+	<div class="order" :class="{ electron: isElectron }">
+		<div class="product-container">
+			<div v-for="(item, idx) in stockList" :key="idx" class="product" @click="addItem(item)">
+				<md-card md-with-hover>
 					<md-ripple>
-						<md-card-media md-ratio="16:9">
-							<img :src="`assets/products/${stock.image}`" />
-						</md-card-media>
-						<md-card-header>
-							<div class="md-title">{{ stock.name }}</div>
-							<div class="md-subhead">{{ stock.quantity }}</div>
+						<md-card-header v-if="!isElectron">
+							<!-- <md-card-media md-ratio="1:1"> -->
+							<img :src="`assets/products/${item.image}`" />
+							<!-- </md-card-media> -->
+							<md-card-header-text>
+								<div class="md-title">{{ item.name }}</div>
+								<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
+							</md-card-header-text>
 						</md-card-header>
-
-						<md-card-content> {{ stock.price }} 원</md-card-content>
-
+						<div v-else>
+							<md-card-media md-ratio="16:9">
+								<img :src="`assets/products/${item.image}`" />
+							</md-card-media>
+							<md-card-header>
+								<div class="md-title">{{ item.name }}</div>
+								<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
+							</md-card-header>
+						</div>
 						<!-- <md-card-actions>
 							<md-button>-</md-button>
 							<md-button>+</md-button>
@@ -22,17 +30,25 @@
 				</md-card>
 			</div>
 		</div>
-		<md-card md-with-hover class="stock-buylist" v-if="buyStockList.length">
-			<div class="stock-buyitem" v-for="(stock, idx) in buyStockList" :key="idx">
-				<div class="stock-buyitem__imagebox">
-					<img :src="`assets/products/${stock.image}`" alt="" />
+
+		<!-- shoppingCart -->
+		<md-card v-if="shoppingCart.length" class="shoppingCart" md-with-hover>
+			<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
+				<img :src="`assets/products/${item.image}`" alt="" />
+				<p class="shoppingCart-item__info">{{ item.name }} x {{ item.quantity }} - {{ item.price * item.quantity }}원</p>
+
+				<md-card-actions>
+					<md-button>-</md-button>
+					<md-button>+</md-button>
+				</md-card-actions>
+				<div>
+					<button class="shoppingCart-item__decrease" @click="decreaseItem(item)">-</button>
+					{{ item.quantity }}
+					<button class="shoppingCart-item__increase" @click="increaseItem(item)">+</button>
 				</div>
-				<p class="stock-buyitem__info">{{ stock.name }} x {{ stock.quantity }} - {{ stock.price * stock.quantity }}원</p>
-				<button class="stock-buyitem__remove" @click="removeStockItem(stock)">
-					<i data-icon="mdi-close" class="iconify" />
-				</button>
+				<button class="shoppingCart-item__remove" @click="removeItem(item)"><i class="iconify" data-icon="mdi:trash" />삭제</button>
 			</div>
-			<app-button class="submit" @click="submit">주문하기</app-button>
+			<app-button class="submit" @click="checkout">주문하기</app-button>
 		</md-card>
 	</div>
 </template>
@@ -40,7 +56,7 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import STT from "@/components/util/STT.vue";
+import numberFormat from "@/utils/numberFormat";
 
 import { StockItem } from "@/schema";
 import { mapState } from "vuex";
@@ -48,26 +64,38 @@ import { State } from "vuex-class";
 
 @Component({})
 export default class Order extends Vue {
-	buyStockList: StockItem[] = [];
-
+	@State("isElectron") isElectron!: boolean;
 	@State("stockList", { namespace: "StockListModule" }) stockList!: StockItem[];
+	shoppingCart: StockItem[] = [];
 
-	// 아이템 구매 로직
-	buyStockItem(stock: StockItem) {
-		let prevStock = this.buyStockList.find((s) => s.name == stock.name);
-		// 이미 장바구니에 있을 시 갯수 +1
+	numberFormat(number: number) {
+		return numberFormat(number);
+	}
+
+	addItem(stock: StockItem) {
+		let prevStock = this.shoppingCart.find((s) => s.name == stock.name);
+		// 이미 장바구니에 있을 시 개수 +1
 		if (prevStock) {
-			// 남은 재고량 확인 후 ++
+			// 남은 재고량 확인 후 증감
 			if (this.stockList.find((s) => s.name == stock.name)!.quantity > prevStock.quantity) prevStock.quantity++;
-		} else this.buyStockList.push({ ...stock, quantity: 1 });
-	}
-	removeStockItem(stock: StockItem) {
-		let prevStockIdx = this.buyStockList.findIndex((s) => s.name == stock.name);
-		if (prevStockIdx != -1) this.buyStockList.splice(prevStockIdx, 1);
+		} else this.shoppingCart.push({ ...stock, quantity: 1 });
 	}
 
-	submit() {
-		// TODO: 구매 (buyStockList)
+	increaseItem(item: StockItem) {
+		// TODO : 장바구니에 담겨있는 제품 수량 증감
+	}
+
+	decreaseItem(item: StockItem) {
+		// TODO : 장바구니에 담겨있는 제품 수량 차감
+	}
+
+	removeItem(item: StockItem) {
+		let prevStockIdx = this.shoppingCart.findIndex((s) => s.name == item.name);
+		if (prevStockIdx != -1) this.shoppingCart.splice(prevStockIdx, 1);
+	}
+
+	checkout() {
+		// TODO : 결제
 	}
 }
 </script>
@@ -77,79 +105,124 @@ export default class Order extends Vue {
 	display: flex;
 	flex-direction: column;
 	margin-bottom: 80vh;
-	.stock-list {
-		padding: 20px;
 
-		display: grid;
-
-		grid-template-columns: 1fr 1fr 1fr;
-
-		row-gap: 30px;
-		column-gap: 30px;
-
-		.stock-item {
-		}
-	}
-
-	.stock-buylist {
-		position: absolute;
-		left: 0;
-		bottom: 0;
-
-		padding: 20px;
-
+	.product-container {
 		display: flex;
 		flex-direction: column;
+		// justify-content: flex-start;
+		align-items: center;
 
-		z-index: 1000;
-
-		.stock-buyitem {
-			position: relative;
-
-			display: flex;
-			align-items: center;
-
-			padding: 10px;
-
-			.stock-buyitem__imagebox {
-				width: 4em;
-				height: 4em;
-
-				border-radius: 20px;
-				background: linear-gradient(145deg, #e6e6e6, #ffffff);
-				box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
-
-				overflow: hidden;
-
+		.product {
+			width: 100%;
+			.md-ripple {
+				height: 90px;
 				img {
-					height: 100%;
+					width: 60px;
+					height: 60px;
+				}
+				.md-title {
+					margin: 0;
+				}
+				.md-card-header-text {
+					display: flex;
+					flex-direction: column;
+					justify-content: center;
 				}
 			}
-			.stock-buyitem__info {
-				margin-left: 20px;
-				font-size: 1.2em;
-			}
-			.stock-buyitem__remove {
-				position: absolute;
-				right: 5px;
-				top: 5px;
+		}
+		// flex-wrap: wrap;
+		// .product {
+		// 	width: 30%;
 
-				padding: 5px;
+		// 	margin: 10px;
 
-				display: flex;
-				justify-content: center;
-				align-items: center;
+		// 	border: none;
+		// 	border-radius: 20px;
+		// 	box-shadow: 3px 3px 20px rgba($color: #000000, $alpha: 0.1);
 
-				border-radius: 100%;
+		// 	.product-group {
+		// 		flex-direction: column;
+		// 		justify-content: center;
+		// 		align-items: center;
 
-				background-color: #cc6666;
-				color: white;
-			}
+		// 		.product-innergroup {
+		// 			align-items: center;
+		// 		}
+		// 	}
+	}
+
+	&.electron {
+		.product-container {
+			padding: 20px;
+
+			display: grid;
+
+			grid-template-columns: 1fr 1fr 1fr;
+
+			row-gap: 30px;
+			column-gap: 30px;
 		}
 
-		.submit {
-			margin-top: 20px;
+		.shoppingCart {
+			position: absolute;
+			left: 0;
+			bottom: 0;
+
+			padding: 20px;
+
+			display: flex;
+			flex-direction: column;
+
+			z-index: 1000;
 		}
 	}
+
+	// .shoppingCart-item {
+	// 	position: relative;
+
+	// 	display: flex;
+	// 	align-items: center;
+
+	// 	padding: 10px;
+
+	// 	.stock-buyitem__imagebox {
+	// 		width: 4em;
+	// 		height: 4em;
+
+	// 		border-radius: 20px;
+	// 		background: linear-gradient(145deg, #e6e6e6, #ffffff);
+	// 		box-shadow: 6px 6px 12px #c2c2c2, -6px -6px 12px #ffffff;
+
+	// 		overflow: hidden;
+
+	// 		img {
+	// 			height: 100%;
+	// 		}
+	// 	}
+	// 	.stock-buyitem__info {
+	// 		margin-left: 20px;
+	// 		font-size: 1.2em;
+	// 	}
+	// 	.stock-buyitem__remove {
+	// 		position: absolute;
+	// 		right: 5px;
+	// 		top: 5px;
+
+	// 		padding: 5px;
+
+	// 		display: flex;
+	// 		justify-content: center;
+	// 		align-items: center;
+
+	// 		border-radius: 100%;
+
+	// 		background-color: #cc6666;
+	// 		color: white;
+	// 	}
+	// }
+
+	// .submit {
+	// 	margin-top: 20px;
+	// }
 }
 </style>
