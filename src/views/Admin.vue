@@ -1,37 +1,33 @@
 <template>
 	<div class="admin">
 		<div class="product-container">
-			<div v-for="(item, idx) in stockList" :key="idx" class="product" @click="selectItem(item)">
-				<md-card md-with-hover>
-					<md-ripple>
-						<md-card-header>
-							<!-- <md-card-media md-ratio="1:1"> -->
-							<img :src="`assets/products/${item.image}`" />
-							<!-- </md-card-media> -->
-							<md-card-header-text>
-								<div class="md-title">{{ item.name }}</div>
-								<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
-							</md-card-header-text>
-						</md-card-header>
-
-						<md-card-content>
-							{{ item.quantity }}개 남음<br />
-							<!-- TODO : 태그형으로 구현 -->
-							별칭 : {{ item.alias.join(", ") }}
-						</md-card-content>
-
-						<!-- <md-card-actions>
-							<md-button>-</md-button>
-							<md-button>+</md-button>
-						</md-card-actions> -->
-					</md-ripple>
-				</md-card>
-			</div>
-			<!-- <div class="admin">
-		<div v-for="(item, idx) in stockList" :key="idx">
-			{{ item }}
-		</div>
-	</div> -->
+			<md-card v-for="(item, idx) in stockList" :key="idx" class="product md-size-50 md-small-size-100">
+				<md-card-header>
+					<img :src="`assets/products/${item.image}`" />
+				</md-card-header>
+				<md-card-content>
+					<div class="md-layout md-gutter">
+						<md-field class="md-layout-item md-small-size-100">
+							<label>제품명</label>
+							<md-input v-model="item.name"></md-input>
+						</md-field>
+						<md-field class="md-layout-item md-small-size-100">
+							<label>별칭 (쉼표로 구분)</label>
+							<md-input v-model="item.alias" @change="updateItem(alias)"></md-input>
+						</md-field>
+						<md-field class="md-layout-item md-small-size-100">
+							<label>가격</label>
+							<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+							<md-input v-model="item.price"></md-input>
+						</md-field>
+						<md-field class="md-layout-item md-small-size-100">
+							<label>재고 수량</label>
+							<md-input v-model="item.quantity"></md-input>
+							<span class="md-suffix">개</span>
+						</md-field>
+					</div>
+				</md-card-content>
+			</md-card>
 		</div>
 	</div>
 </template>
@@ -55,6 +51,8 @@ export default class Admin extends Vue {
 		return numberFormat(number);
 	}
 
+	updateItem(key: string) {}
+
 	selectItem(item: StockItem[]) {}
 }
 </script>
@@ -66,27 +64,42 @@ export default class Admin extends Vue {
 
 	height: 100%;
 
+	.hgroup {
+		display: flex;
+
+		.md-field {
+			margin-left: 20px;
+		}
+	}
+
 	.product-container {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 
 		.product {
+			display: flex;
+			align-items: center;
+
 			width: 100%;
-			.md-ripple {
-				// height: 90px;
-				img {
-					width: 60px;
-					height: 60px;
-				}
-				.md-title {
-					margin: 0;
-				}
-				.md-card-header-text {
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-				}
+
+			border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+
+			img {
+				display: block;
+
+				margin-right: 30px;
+
+				width: 60px;
+				height: 60px;
+
+				border-radius: 50%;
+			}
+
+			.md-layout {
+				display: flex;
+				flex-direction: column;
+				flex-wrap: wrap;
 			}
 		}
 	}
