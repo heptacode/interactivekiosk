@@ -22,8 +22,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 				await db.collection("logs").add({
 					timestamp: firebase.firestore.FieldValue.serverTimestamp(),
 					platform: process.platform,
-					type: data.type,
-					message: data.message,
+					...data,
 				});
 			} catch (err) {
 				console.error(`LOG: Unexpected Error While Logging`);
@@ -51,10 +50,8 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 			try {
 				let imageURL = await dispatch("UPLOAD_IMAGE", data.image);
 				return (await db.collection("stock").add({
-					name: data.name,
+					...data,
 					alias: data.alias ? data.alias.trim().split(",") : [],
-					price: data.price,
-					quantity: data.quantity,
 					image: imageURL,
 				}))
 					? true
@@ -91,11 +88,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 		async DUPLICATE_ITEM({ dispatch }, data: { id: string; itemData: StockItem }): Promise<boolean> {
 			try {
 				return (await db.collection("stock").add({
-					name: data.itemData.name,
-					alias: data.itemData.alias,
-					price: data.itemData.price,
-					quantity: data.itemData.quantity,
-					image: data.itemData.image,
+					...data.itemData,
 				}))
 					? true
 					: false;
