@@ -133,7 +133,7 @@ export default class Admin extends Vue {
 	}
 
 	resetItemCreator() {
-		this.isItemCreatorVisible = this.itemCreating = false;
+		this.isItemCreatorVisible = this.isItemCreating = false;
 		this.itemCreatorData = {
 			name: "",
 			alias: "",
