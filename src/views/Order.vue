@@ -59,7 +59,7 @@
 							<h4>&times;{{ item.quantity }}</h4>
 							<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
 						</md-card-actions>
-						<h4>{{ numberFormat(item.price * item.quantity) }}원</h4>
+						<h4 class="price">{{ numberFormat(item.price * item.quantity) }}원</h4>
 					</div>
 
 					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
@@ -179,15 +179,18 @@ export default class Order extends Vue {
 	}
 	.shoppingCart-container {
 		position: fixed;
-		top: auto;
 		bottom: 0;
+		left: 0;
+		right: 0;
+
+		margin: 0 auto;
+		margin-bottom: 10px;
 
 		display: flex;
 		justify-content: center;
 		align-items: center;
 
-		width: 100%;
-		margin-bottom: 10px;
+		width: 60%;
 
 		z-index: 10000;
 
@@ -201,7 +204,7 @@ export default class Order extends Vue {
 
 			border-radius: 20px;
 
-			width: 80%;
+			width: 100%;
 			max-width: 500px;
 
 			padding: 20px;
@@ -219,7 +222,6 @@ export default class Order extends Vue {
 
 			.shoppingCart-item {
 				display: flex;
-				justify-content: space-between;
 				align-items: center;
 
 				width: 100%;
@@ -237,10 +239,18 @@ export default class Order extends Vue {
 				}
 			}
 
+			h2 {
+				flex: 2;
+			}
 			.shoppingCart-actions {
+				flex: 1;
 				h4 {
 					padding: 0 10px;
 				}
+			}
+			.price {
+				flex: 1;
+				text-align: right;
 			}
 			.checkout {
 				margin-top: 20px;
