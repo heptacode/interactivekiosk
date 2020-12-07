@@ -88,7 +88,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 		async DUPLICATE_ITEM({ dispatch }, data: { id: string; itemData: StockItem }): Promise<boolean> {
 			try {
 				return (await db.collection("stock").add({
-					...data.itemData,
+					...data["itemData"],
 				}))
 					? true
 					: false;

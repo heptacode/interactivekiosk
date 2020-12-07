@@ -98,16 +98,22 @@ export default class VoiceOrder extends Vue {
 		this.isOrderProcess = true;
 		this.orderProcess();
 
-		// setTimeout(
-		// 	() =>
-		// 		this.shoppingCart.push({
-		// 			name: "망고",
-		// 			price: 2000,
-		// 			quantity: 1,
-		// 			image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
-		// 		}),
-		// 	500
-		// );
+		setTimeout(() => {
+			this.shoppingCart.push(
+				{
+					name: "망고",
+					price: 4000,
+					quantity: 2,
+					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
+				},
+				{
+					name: "자몽",
+					price: 3000,
+					quantity: 5,
+					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fgrapefruit.jpg?alt=media&token=8f451da3-be70-4100-b94b-7f8514197087",
+				}
+			);
+		}, 500);
 	}
 
 	numberFormat(number: number) {
