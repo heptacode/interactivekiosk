@@ -84,21 +84,21 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
-		// await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		// await this.playItems();
-		// this.isOrderProcess = true;
-		// this.orderProcess();
+		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
+		await this.playItems();
+		this.isOrderProcess = true;
+		this.orderProcess();
 
-		setTimeout(
-			() =>
-				this.shoppingCart.push({
-					name: "망고",
-					price: 2000,
-					quantity: 1,
-					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
-				}),
-			500
-		);
+		// setTimeout(
+		// 	() =>
+		// 		this.shoppingCart.push({
+		// 			name: "망고",
+		// 			price: 2000,
+		// 			quantity: 1,
+		// 			image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
+		// 		}),
+		// 	500
+		// );
 	}
 
 	numberFormat(number: number) {

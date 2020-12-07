@@ -18,6 +18,7 @@
 			<app-button class="app-button">도움 요청</app-button>
 			<app-button class="app-button" @click="$router.replace('order')">시작하기</app-button>
 		</div>
+		<div class="voiceorder" @click="$router.replace('/voiceorder')"></div>
 	</div>
 </template>
 
@@ -148,6 +149,10 @@ export default class Home extends Vue {
 			height: 50px;
 			margin: 10px;
 		}
+	}
+	.voiceorder {
+		width: 50px;
+		height: 50px;
 	}
 }
 </style>
