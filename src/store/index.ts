@@ -11,6 +11,8 @@ import axios from "axios";
 import AudioModule, { IAudioModule } from "./modules/AudioModule";
 import FirestoreModule, { IFirestoreModule } from "./modules/FirestoreModule";
 
+const script = require("@/lib/script.json");
+
 Vue.use(Vuex);
 
 export interface RootState {
@@ -18,6 +20,7 @@ export interface RootState {
 	earphoneDetection: boolean;
 	stockList: StockItem[];
 	helloLoop: number;
+	script: string;
 }
 
 const store: StoreOptions<RootState> = {
@@ -26,6 +29,7 @@ const store: StoreOptions<RootState> = {
 		earphoneDetection: false,
 		stockList: [],
 		helloLoop: 0,
+		script: "",
 	},
 	mutations: {
 		activateEarphoneDetection(state) {
@@ -51,7 +55,9 @@ const store: StoreOptions<RootState> = {
 			state.stockList.forEach((item) => {
 				stockList += `${item.name}, `;
 			});
+			state.script = script.item_list;
 			await dispatch("AudioModule/playAudio", { isLocal: true, data: "voiceorder/item_list" });
+			state.script = stockList;
 			await dispatch("TTS", stockList);
 			return true;
 		},

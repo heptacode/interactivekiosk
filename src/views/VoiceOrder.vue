@@ -1,5 +1,10 @@
 <template>
 	<div class="voiceorder">
+		<div class="script">
+			<i class="iconify" data-icon="mdi:volume-high"></i>
+			{{ script }}
+		</div>
+
 		<div class="indicator" :class="{ speakable: isSpeakable, recording: isRecording }">
 			<span v-if="isSpeakable || isRecording">
 				<span> <i class="iconify" data-icon="mdi:microphone"></i></span>
@@ -45,6 +50,7 @@
 				</md-card>
 			</div>
 		</transition>
+
 		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
 </template>
@@ -58,6 +64,7 @@ import STT from "@/components/util/STT.vue";
 
 import numberFormat from "@/utils/numberFormat";
 
+const script = require("@/lib/script.json");
 const koreanNumber = require("@/lib/koreanNumber.json");
 
 @Component({
@@ -67,6 +74,7 @@ const koreanNumber = require("@/lib/koreanNumber.json");
 })
 export default class VoiceOrder extends Vue {
 	@State("stockList") stockList!: StockItem[];
+	@State("script") script!: string;
 
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 	@Action("playItems") playItems!: Function;
@@ -84,6 +92,7 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
+		this.$store.state.script = script.earphone_connected;
 		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
 		await this.playItems();
 		this.isOrderProcess = true;
@@ -128,8 +137,13 @@ export default class VoiceOrder extends Vue {
 
 	async orderProcess() {
 		if (this.isOrderProcess) {
-			if (!this.shoppingCart.length) await this.playAudio({ isLocal: true, data: "voiceorder/ask" });
-			else await this.playAudio({ isLocal: true, data: "voiceorder/ask_another" });
+			if (!this.shoppingCart.length) {
+				this.$store.state.script = script.ask;
+				await this.playAudio({ isLocal: true, data: "voiceorder/ask" });
+			} else {
+				this.$store.state.script = script.ask_another;
+				await this.playAudio({ isLocal: true, data: "voiceorder/ask_another" });
+			}
 			this.isSpeakable = true;
 		}
 	}
@@ -181,11 +195,11 @@ export default class VoiceOrder extends Vue {
 				unavailableItems.length ? `이며, 주문이 불가능한 메뉴는 ${unavailableItems.map((s) => s.name).join(",")}입니다.` : "입니다."
 			}`;
 
-			console.log(clearStr);
-
+			this.$store.state.script = clearStr;
 			await this.TTS(clearStr);
 		} catch (err) {
 			console.error(err);
+			this.$store.state.script = script.error;
 			await this.playAudio({ isLocal: true, data: "voiceorder/error" });
 		}
 		this.orderProcess();
@@ -198,6 +212,7 @@ export default class VoiceOrder extends Vue {
 
 		this.isCheckoutVisible = true;
 
+		this.$store.state.script = script.checkout_complete;
 		await this.playAudio({ isLocal: true, data: "voiceorder/checkout_complete" });
 	}
 }
@@ -238,6 +253,30 @@ export default class VoiceOrder extends Vue {
 	height: 100%;
 
 	overflow: hidden;
+
+	.script {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		position: absolute;
+		top: 140px;
+		right: auto;
+		left: auto;
+
+		padding: 20px;
+
+		border-radius: 20px;
+
+		box-shadow: 0 2px 10px rgba(#000, 0.3);
+
+		font-size: 1.5em;
+
+		.iconify {
+			margin-right: 10px;
+			font-size: 2em;
+		}
+	}
 
 	.indicator {
 		display: flex;
@@ -331,6 +370,62 @@ export default class VoiceOrder extends Vue {
 				margin-top: 20px;
 				align-self: flex-end;
 			}
+		}
+	}
+}
+
+.checkout-container {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+
+	background-color: rgba(#000, 0.5);
+
+	width: 100%;
+	height: 100%;
+
+	z-index: 10001;
+
+	.checkout {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		border-radius: 20px;
+
+		margin-bottom: 15px;
+
+		width: 100%;
+		max-width: 500px;
+
+		padding: 20px;
+
+		box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
+
+		.checkout-heading {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			width: 100%;
+			margin-bottom: 10px;
+		}
+
+		img {
+			display: block;
+
+			width: calc(50% - 32px);
+			max-height: 370px;
+		}
+
+		.total {
+			margin-top: 20px;
 		}
 	}
 }

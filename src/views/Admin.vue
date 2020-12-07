@@ -173,7 +173,7 @@ export default class Admin extends Vue {
 		let result = await this.updateItem({ key: "image", id: id, value: image });
 		if (result) {
 			this.imageUploadIdx = -1;
-			this.imageUploadProgress = 0;
+			this.$store.state.imageUploadProgress = 0;
 		}
 	}
 
