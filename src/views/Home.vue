@@ -4,8 +4,8 @@
 			<img src="/assets/images/payments.svg" alt="Payments Image" draggable="false" />
 			<div class="text">
 				<h2 class="title">다양한 사용자를 위한 KIOSK 개선 프로젝트</h2>
-				<span class="version">프로토타입</span>
-				<span class="subtitle">구현 계획</span>
+				<span class="version">Release 1.1.0</span>
+				<span class="subtitle">구현 기능</span>
 				<ul>
 					<li>주문 안내 음성 및 음성 주문 기능</li>
 					<li>UI/UX 개선</li>
@@ -16,7 +16,7 @@
 		<div class="actions">
 			<app-button v-if="isElectron && !earphoneDetection" class="app-button" @click="activateEarphoneDetection">이어폰 감지 활성화</app-button>
 			<app-button class="app-button">도움 요청</app-button>
-			<app-button class="app-button" @click="$router.push('order')">시작하기</app-button>
+			<app-button class="app-button" @click="$router.replace('order')">시작하기</app-button>
 		</div>
 	</div>
 </template>
