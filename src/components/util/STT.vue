@@ -4,18 +4,20 @@
 
 <script lang="ts">
 import { Component, Model, Prop, Vue, Watch } from "vue-property-decorator";
+import { Action } from "vuex-class";
 
-declare class MediaRecorder {
-	constructor(stream: any);
-	start(): void;
-	stop(): void;
-	addEventListener(str: string, callback: any): void;
-}
+// declare class MediaRecorder {
+// 	constructor(stream: any);
+// 	start(): void;
+// 	stop(): void;
+// 	addEventListener(str: string, callback: any): void;
+// }
 
 @Component
 export default class STT extends Vue {
 	@Model("change", { type: Boolean }) readonly isRecord!: boolean;
 	@Prop({ type: Function }) callback!: (text: string) => void;
+	@Action("STT") STT!: Function;
 
 	blob: Blob | null = null;
 	mediaRecorder!: MediaRecorder;
@@ -55,13 +57,13 @@ export default class STT extends Vue {
 	async transform() {
 		console.log("텍스트 변환 시작");
 		try {
-			let text = await this.$store.dispatch("STT", this.blob);
+			let text = await this.STT(this.blob);
 			console.log(`변환 데이터: ${text}`);
 
 			this.callback && this.callback(text);
 			this.$emit("record", text);
 		} catch (err) {
-			console.log(`변환 데이터: 실패`);
+			console.error("변환 실패");
 			console.error(err);
 
 			this.callback && this.callback("");

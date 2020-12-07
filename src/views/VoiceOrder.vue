@@ -9,7 +9,27 @@
 			</span>
 		</div>
 
-		{{ shoppingCart }}
+		<!-- <shoppingCart> -->
+		<div class="shoppingCart-container">
+			<transition name="fade">
+				<md-card class="shoppingCart" v-if="shoppingCart.length">
+					<div class="shoppingCart-heading">
+						<h1>장바구니</h1>
+					</div>
+
+					<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
+						<img :src="item.image" alt="" />
+						<h2>{{ item.name }}</h2>
+						<h3>&times;{{ item.quantity }}</h3>
+
+						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
+					</div>
+
+					<h2 class="total">합계 | {{ getTotalPrice }}원</h2>
+				</md-card>
+			</transition>
+		</div>
+		<!-- </shoppingCart> -->
 
 		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
@@ -22,6 +42,8 @@ import { StockItem } from "@/schema";
 import { Action, State } from "vuex-class";
 import STT from "@/components/util/STT.vue";
 
+import numberFormat from "@/utils/numberFormat";
+
 const koreanNumber = require("@/lib/koreanNumber.json");
 
 @Component({
@@ -33,6 +55,7 @@ export default class VoiceOrder extends Vue {
 	@State("stockList") stockList!: StockItem[];
 
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
+	@Action("playItems") playItems!: Function;
 	@Action("TTS") TTS!: Function;
 
 	isRecording: boolean = false;
@@ -45,9 +68,33 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
-		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		this.isSpeakable = true;
-		this.isOrderProcess = true;
+		// await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
+		// await this.playItems();
+		// this.isOrderProcess = true;
+		// this.orderProcess();
+
+		setTimeout(
+			() =>
+				this.shoppingCart.push({
+					name: "망고",
+					price: 2000,
+					quantity: 1,
+					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
+				}),
+			500
+		);
+	}
+
+	numberFormat(number: number) {
+		return numberFormat(number);
+	}
+
+	get getTotalPrice(): string {
+		let total = 0;
+		this.shoppingCart.forEach((i) => {
+			total += i.price * i.quantity;
+		});
+		return numberFormat(total);
 	}
 
 	activatePTT(event: KeyboardEvent) {
@@ -61,6 +108,14 @@ export default class VoiceOrder extends Vue {
 		if (event.code !== "Space" || !this.isRecording || !this.isOrderProcess) return;
 		this.isRecording = this.isSpeakable = false;
 		this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
+	}
+
+	async orderProcess() {
+		if (this.isOrderProcess) {
+			if (!this.shoppingCart.length) await this.playAudio({ isLocal: true, data: "voiceorder/ask" });
+			else await this.playAudio({ isLocal: true, data: "voiceorder/ask_another" });
+			this.isSpeakable = true;
+		}
 	}
 
 	async parseText(text: string) {
@@ -111,14 +166,13 @@ export default class VoiceOrder extends Vue {
 			}`;
 
 			console.log(clearStr);
-			console.log(this.shoppingCart);
 
 			await this.TTS(clearStr);
 		} catch (err) {
 			console.error(err);
 			await this.playAudio({ isLocal: true, data: "voiceorder/error" });
 		}
-		this.isSpeakable = true;
+		this.orderProcess();
 	}
 
 	async checkout() {
@@ -144,6 +198,18 @@ export default class VoiceOrder extends Vue {
 	100% {
 		box-shadow: 2px 2px 10px rgba(#000, 0.4);
 	}
+}
+
+.fade-enter-active,
+.fade-leave-active {
+	transition: 0.3s;
+	position: absolute;
+	bottom: 0;
+}
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+	transform: translateY(100px);
 }
 
 .voiceorder {
@@ -179,6 +245,76 @@ export default class VoiceOrder extends Vue {
 
 		&.recording {
 			background-color: yellowgreen;
+		}
+	}
+
+	.shoppingCart-container {
+		position: fixed;
+		bottom: 0;
+		left: 0;
+		right: 0;
+
+		margin: 0 auto;
+		margin-bottom: 10px;
+
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		width: 60%;
+
+		z-index: 10000;
+
+		.shoppingCart {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+
+			border-radius: 20px;
+
+			width: 100%;
+			max-width: 500px;
+
+			padding: 20px;
+
+			box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
+
+			.shoppingCart-heading {
+				display: flex;
+				align-items: center;
+
+				width: 100%;
+				margin-bottom: 10px;
+			}
+
+			.shoppingCart-item {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
+				width: 100%;
+
+				padding: 10px 0;
+				border-bottom: 0.5px solid rgba(#000, 0.15);
+
+				h2 {
+					flex: 1;
+					padding: 0 4px;
+				}
+				img {
+					width: 50px;
+					height: 50px;
+					border-radius: 50%;
+				}
+			}
+			.price {
+				flex: 1;
+				text-align: right;
+			}
+			.total {
+				margin-top: 20px;
+				align-self: flex-end;
+			}
 		}
 	}
 }

@@ -65,7 +65,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 							let imageURL = await uploadTask.snapshot.ref.getDownloadURL();
 							let result = (await db.collection("stock").add({
 								name: data.name,
-								alias: data.alias.trim().split(","),
+								alias: data.alias ? data.alias.trim().split(",") : [],
 								price: data.price,
 								quantity: data.quantity,
 								image: imageURL,

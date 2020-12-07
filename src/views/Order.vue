@@ -56,16 +56,15 @@
 
 						<md-card-actions class="shoppingCart-actions">
 							<app-button class="md-icon-button" @click="decreaseItem(item)">-</app-button>
-							<h4>&times;{{ item.quantity }}</h4>
+							<h3>&times;{{ item.quantity }}</h3>
 							<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
 						</md-card-actions>
-						<h4 class="price">{{ numberFormat(item.price * item.quantity) }}원</h4>
+						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
 					</div>
 
 					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout"> {{ getTotalPrice }}원 결제하기 </app-button>
 				</md-card>
 			</transition>
-
 			<!-- </shoppingCart> -->
 		</div>
 
@@ -313,7 +312,7 @@ export default class Order extends Vue {
 					border-radius: 50%;
 				}
 
-				h4 {
+				h3 {
 					padding: 0 10px;
 				}
 			}

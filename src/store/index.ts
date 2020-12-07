@@ -4,6 +4,7 @@ import { StockItem } from "@/schema";
 import { db } from "@/DB";
 
 import { firestoreAction, vuexfireMutations } from "vuexfire";
+
 import CryptoJS from "crypto-js";
 import axios from "axios";
 
@@ -37,6 +38,15 @@ const store: StoreOptions<RootState> = {
 		unbindStock: firestoreAction(({ unbindFirestoreRef }) => {
 			unbindFirestoreRef("stockList");
 		}),
+		async playItems({ state, dispatch }): Promise<boolean> {
+			let stockList: string = "";
+			state.stockList.forEach((item) => {
+				stockList += `${item.name}, `;
+			});
+			await dispatch("AudioModule/playAudio", { isLocal: true, data: "voiceorder/item_list" });
+			await dispatch("TTS", stockList);
+			return true;
+		},
 		async STT({}, data: Blob): Promise<string> {
 			return (
 				await axios.post("https://naveropenapi.apigw.ntruss.com/recog/v1/stt", data, {
@@ -52,7 +62,7 @@ const store: StoreOptions<RootState> = {
 				})
 			).data.text;
 		},
-		async TTS({}, text: string): Promise<any> {
+		async TTS({ dispatch }, text: string): Promise<any> {
 			try {
 				let checksum = CryptoJS.MD5(`3134${text}${process.env.VUE_APP_TTSACCOUNT}${process.env.VUE_APP_TTSID}${process.env.VUE_APP_TTSSECRET}`).toString();
 
@@ -66,7 +76,7 @@ const store: StoreOptions<RootState> = {
 				).data;
 
 				let url = URL.createObjectURL(result);
-				return await this.dispatch("AudioModule/playAudio", { isLocal: false, data: url });
+				return await dispatch("AudioModule/playAudio", { isLocal: false, data: url });
 			} catch (err) {
 				console.error(err);
 			}
