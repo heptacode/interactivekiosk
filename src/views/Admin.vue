@@ -3,7 +3,8 @@
 		<div class="product-container">
 			<md-card v-for="(item, idx) in stockList" :key="idx" class="product">
 				<md-card-header>
-					<img :src="`assets/products/${item.image}`" @click="/*updateImage(item.id)*/" />
+					<!-- TODO: 이미지 클릭시 변경  -->
+					<img :src="item.image" @click="/*updateImage(item.id)*/" />
 				</md-card-header>
 				<md-card-content class="product-content">
 					<div class="md-layout md-gutter">
@@ -49,47 +50,49 @@
 
 		<div v-else class="itemCreator-container">
 			<md-card class="itemCreator">
-				<div class="itemCreator-heading">
-					<h1>제품 추가</h1>
-					<app-button class="md-icon-button md-accent md-dense" @click="(isItemCreatorVisible = false), (itemCreatorData = {})">
-						<i class="iconify" data-icon="mdi:close"></i>
-					</app-button>
-				</div>
-
-				<div class="itemCreator-item">
-					<label class="itemCreator-item-image">
-						<span v-if="!itemCreatorData.image">
-							<i class="iconify" data-icon="mdi:image-plus"></i>
-						</span>
-						<img v-else :src="itemCreatorData.image.blobURL" alt="" />
-						<input type="file" ref="itemCreatorImage" accept="image/*" @change="onImageChange" style="display:none" />
-					</label>
-
-					<div class="md-layout">
-						<md-field>
-							<label>제품명</label>
-							<md-input v-model="itemCreatorData.name"></md-input>
-						</md-field>
-						<md-field>
-							<label>별칭 (쉼표로 구분)</label>
-							<md-input v-model="itemCreatorData.alias"></md-input>
-						</md-field>
-						<md-field class="md-layout-item" style="padding-left: 0">
-							<label>가격</label>
-							<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-							<md-input type="tel" v-model="itemCreatorData.price"></md-input>
-						</md-field>
-						<md-field class="md-layout-item">
-							<label>재고 수량</label>
-							<md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99"></md-input>
-							<span class="md-suffix">개</span>
-						</md-field>
+				<form action="javascript:void(0)" @submit="submitItemCreator">
+					<div class="itemCreator-heading">
+						<h1>제품 추가</h1>
+						<app-button class="md-icon-button md-accent md-dense" @click="(isItemCreatorVisible = false), (itemCreatorData = {})">
+							<i class="iconify" data-icon="mdi:close"></i>
+						</app-button>
 					</div>
-				</div>
 
-				<app-button class="round submit" :disabled="!itemCreatorData.name || !itemCreatorData.price || !itemCreatorData.quantity" @click="createItem(itemCreatorData)">
-					완료
-				</app-button>
+					<div class="itemCreator-item">
+						<label class="itemCreator-item-image">
+							<span v-if="!itemCreatorData.image.blobURL">
+								<i class="iconify" data-icon="mdi:image-plus"></i>
+							</span>
+							<img v-else :src="itemCreatorData.image.blobURL" alt="" />
+							<input type="file" ref="itemCreatorImage" accept="image/*" @change="onImageChange" style="display:none" />
+						</label>
+
+						<div class="md-layout">
+							<md-field>
+								<label>제품명</label>
+								<md-input v-model="itemCreatorData.name" required></md-input>
+							</md-field>
+							<md-field>
+								<label>별칭 (쉼표로 구분)</label>
+								<md-input v-model="itemCreatorData.alias" required></md-input>
+							</md-field>
+							<md-field class="md-layout-item" style="padding-left: 0">
+								<label>가격</label>
+								<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+								<md-input type="tel" v-model="itemCreatorData.price" required></md-input>
+							</md-field>
+							<md-field class="md-layout-item">
+								<label>재고 수량</label>
+								<md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99" required></md-input>
+								<span class="md-suffix">개</span>
+							</md-field>
+						</div>
+					</div>
+
+					<app-button type="submit" class="round submit" :disabled="!itemCreatorData.name || !itemCreatorData.alias || !itemCreatorData.price || !itemCreatorData.quantity">
+						완료
+					</app-button>
+				</form>
 			</md-card>
 		</div>
 	</div>
@@ -103,6 +106,7 @@ import { Action, State } from "vuex-class";
 
 import numberFormat from "@/utils/numberFormat";
 import imageToBase64 from "@/utils/imageToBase64";
+import { Item } from "electron";
 
 @Component({})
 export default class Admin extends Vue {
@@ -117,12 +121,27 @@ export default class Admin extends Vue {
 	isItemCreatorVisible: boolean = false;
 	itemCreatorData: ItemCreatorData = {} as ItemCreatorData;
 
+	mounted() {
+		this.resetItemCreator();
+	}
+
+	resetItemCreator() {
+		this.isItemCreatorVisible = false;
+		this.itemCreatorData = {
+			name: "",
+			alias: "",
+			price: 0,
+			quantity: 1,
+			image: { name: "", blobURL: "", data: "" },
+		};
+	}
+
 	numberFormat(number: number) {
 		return numberFormat(number);
 	}
 
 	async onImageChange() {
-		if (this.itemCreatorData.image.blobURL !== "") URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
+		if (this.itemCreatorData.image && this.itemCreatorData.image.blobURL !== "") URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
 
 		let imageDOM = this.$refs.itemCreatorImage["files"][0];
 		let blobURL = URL.createObjectURL(imageDOM);
@@ -132,6 +151,11 @@ export default class Admin extends Vue {
 			blobURL: blobURL,
 			data: await imageToBase64(blobURL),
 		};
+	}
+
+	async submitItemCreator() {
+		let result = await this.createItem(this.itemCreatorData);
+		if (result) this.resetItemCreator();
 	}
 }
 </script>

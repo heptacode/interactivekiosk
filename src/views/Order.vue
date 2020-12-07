@@ -6,7 +6,7 @@
 					<md-ripple>
 						<md-card-header v-if="!isElectron">
 							<!-- <md-card-media md-ratio="1:1"> -->
-							<img :src="`assets/products/${item.image}`" />
+							<img :src="item.image" />
 							<!-- </md-card-media> -->
 							<md-card-header-text>
 								<div class="md-title">{{ item.name }}</div>
@@ -15,7 +15,7 @@
 						</md-card-header>
 						<div v-else>
 							<md-card-media md-ratio="16:9">
-								<img :src="`assets/products/${item.image}`" />
+								<img :src="item.image" />
 							</md-card-media>
 							<md-card-header>
 								<div class="md-title">{{ item.name }}</div>
@@ -48,7 +48,7 @@
 				</div>
 
 				<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
-					<img :src="`assets/products/${item.image}`" alt="" />
+					<img :src="item.image" alt="" />
 					<h2>{{ item.name }}</h2>
 
 					<md-card-actions class="shoppingCart-actions">

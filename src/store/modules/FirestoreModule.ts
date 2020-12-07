@@ -57,7 +57,7 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 
 				return (await db.collection("stock").add({
 					name: data.name,
-					alias: data.alias,
+					alias: data.alias.trim().split(","),
 					price: data.price,
 					quantity: data.quantity,
 					image: imageURL,
