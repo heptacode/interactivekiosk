@@ -62,7 +62,7 @@
 						<h4 class="price">{{ numberFormat(item.price * item.quantity) }}원</h4>
 					</div>
 
-					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
+					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout"> {{ getTotalPrice }}원 결제하기 </app-button>
 				</md-card>
 			</transition>
 
@@ -250,7 +250,6 @@ export default class Order extends Vue {
 			}
 			.checkout {
 				margin-top: 20px;
-				padding: 10px;
 				align-self: flex-end;
 			}
 		}

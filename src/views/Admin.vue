@@ -3,8 +3,10 @@
 		<div class="product-container">
 			<md-card v-for="(item, idx) in stockList" :key="idx" class="product">
 				<md-card-header>
-					<!-- TODO: 이미지 클릭시 변경  -->
-					<img :src="item.image" @click="/*updateImage(item.id)*/" />
+					<label>
+						<img :src="item.image" :alt="item.name" />
+						<input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange" style="display:none" />
+					</label>
 				</md-card-header>
 				<md-card-content class="product-content">
 					<div class="md-layout md-gutter">
@@ -66,8 +68,8 @@
 								<span v-if="!itemCreatorData.image.blobURL">
 									<i class="iconify" data-icon="mdi:image-plus"></i>
 								</span>
-								<img v-else :src="itemCreatorData.image.blobURL" alt="" />
-								<input type="file" ref="itemCreatorImage" accept="image/*" :disabled="isItemCreating" @change="onImageChange" style="display:none" />
+								<img v-else :src="itemCreatorData.image.blobURL" :alt="itemCreatorData.name" />
+								<input type="file" ref="itemCreatorImage" accept="image/*" :disabled="isItemCreating" @change="onItemCreatorImageChange" style="display:none" />
 							</label>
 
 							<div class="md-layout">
@@ -152,6 +154,17 @@ export default class Admin extends Vue {
 	}
 
 	async onImageChange() {
+		let imageDOM = this.$refs.itemCreatorImage["files"][0];
+		let blobURL = URL.createObjectURL(imageDOM);
+
+		this.itemCreatorData.image = {
+			name: imageDOM.name,
+			blobURL: blobURL,
+			data: await imageToBase64(blobURL),
+		};
+	}
+
+	async onItemCreatorImageChange() {
 		if (this.itemCreatorData.image && this.itemCreatorData.image.blobURL !== "") URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
 
 		let imageDOM = this.$refs.itemCreatorImage["files"][0];

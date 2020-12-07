@@ -1,20 +1,22 @@
 import { Module } from "vuex";
 import { RootState } from "@/store/index";
 
+let audio: HTMLAudioElement;
+
 export interface IAudioModule {
 	audio: HTMLAudioElement;
 }
 
 const AudioModule: Module<IAudioModule, RootState> = {
 	namespaced: true,
-	state: {
-		audio: new Audio(),
+	mutations: {
+		stopAudio(): void {
+			if (audio) audio.pause();
+		},
 	},
 	actions: {
-		playAudio({ state }, data: { isLocal: boolean; data: string }): Promise<boolean> {
-			console.log(data);
-			let audio = state.audio;
-			audio.pause();
+		playAudio({}, data: { isLocal: boolean; data: string }): Promise<boolean> {
+			if (audio) audio.pause();
 
 			let url: string = data.isLocal ? `/assets/sound/${data.data}.mp3` : data.data;
 			audio = new Audio(url);

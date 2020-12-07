@@ -1,16 +1,15 @@
 <template>
 	<div class="voiceorder">
-		<div class="indicator" :class="{ active: isRecording }" v-if="isSpeakable || isRecording">
-			<span>
-				<i class="iconify" data-icon="mdi:microphone"></i>
+		<div class="indicator" :class="{ speakable: isSpeakable, recording: isRecording }">
+			<span v-if="isSpeakable || isRecording">
+				<span> <i class="iconify" data-icon="mdi:microphone"></i></span>
+			</span>
+			<span v-else>
+				<span> <i class="iconify" data-icon="mdi:headset"></i></span>
 			</span>
 		</div>
-		<div class="indicator disabled" v-else>
-			<span>
-				<i class="iconify" data-icon="mdi:microphone-off"></i>
-			</span>
-		</div>
-		<!-- {{ buyStockList }} -->
+
+		{{ shoppingCart }}
 
 		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
@@ -40,7 +39,7 @@ export default class VoiceOrder extends Vue {
 	isSpeakable: boolean = false;
 	isOrderProcess: boolean = false;
 
-	buyStockList: StockItem[] = []; // 현 주문 상품
+	shoppingCart: StockItem[] = []; // 현 주문 상품
 
 	async mounted() {
 		window.addEventListener("keydown", this.activatePTT);
@@ -50,6 +49,7 @@ export default class VoiceOrder extends Vue {
 		this.isSpeakable = true;
 		this.isOrderProcess = true;
 	}
+
 	activatePTT(event: KeyboardEvent) {
 		if (event.code !== "Space" || this.isRecording || !this.isSpeakable || !this.isOrderProcess) return;
 		this.isRecording = true;
@@ -59,7 +59,7 @@ export default class VoiceOrder extends Vue {
 
 	deactivatePTT(event: KeyboardEvent) {
 		if (event.code !== "Space" || !this.isRecording || !this.isOrderProcess) return;
-		this.isRecording = false;
+		this.isRecording = this.isSpeakable = false;
 		this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
 	}
 
@@ -100,18 +100,18 @@ export default class VoiceOrder extends Vue {
 
 			console.log(`인식 - ${menuAlias}, ${quantity}`);
 
-			let prevStockItem = this.buyStockList.find((s) => s.name == stockItem?.name);
+			let prevStockItem = this.shoppingCart.find((s) => s.name == stockItem?.name);
 			if (prevStockItem) {
 				if (stockItem!.quantity > prevStockItem.quantity) prevStockItem.quantity++;
 				else unavailableItems.push(stockItem);
-			} else this.buyStockList.push({ ...stockItem!, quantity: 1 });
+			} else this.shoppingCart.push({ ...stockItem!, quantity: 1 });
 
-			let clearStr = `장바구니에 추가된 메뉴는 ${this.buyStockList.map((item) => item.name).join(",") || "없"}${
+			let clearStr = `장바구니에 추가된 메뉴는 ${this.shoppingCart.map((item) => item.name).join(",") || "없"}${
 				unavailableItems.length ? `이며, 주문이 불가능한 메뉴는 ${unavailableItems.map((s) => s.name).join(",")}입니다.` : "입니다."
 			}`;
 
 			console.log(clearStr);
-			console.log(this.buyStockList);
+			console.log(this.shoppingCart);
 
 			await this.TTS(clearStr);
 		} catch (err) {
@@ -134,6 +134,18 @@ export default class VoiceOrder extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@keyframes indicator {
+	0% {
+		box-shadow: 2px 2px 10px rgba(#000, 0.4);
+	}
+	50% {
+		box-shadow: 3px 3px 20px rgba(#000, 0.7);
+	}
+	100% {
+		box-shadow: 2px 2px 10px rgba(#000, 0.4);
+	}
+}
+
 .voiceorder {
 	display: flex;
 	flex-direction: column;
@@ -145,32 +157,28 @@ export default class VoiceOrder extends Vue {
 
 	overflow: hidden;
 
-	background: radial-gradient(circle, #538fff 15%, white 17.5%);
-
-	@keyframes mic {
-		0% {
-			font-size: 7em;
-		}
-		50% {
-			font-size: 8em;
-		}
-		100% {
-			font-size: 7em;
-		}
-	}
-
 	.indicator {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		width: 200px;
+		height: 200px;
+
+		border-radius: 50%;
+		background-color: rgba(#000, 0.3);
+		box-shadow: 0 2px 10px rgba(#000, 0.4);
+
+		font-size: 80px;
 		color: white;
-		font-size: 7em;
 
-		animation: mic 2s infinite;
-
-		&.active {
-			color: yellowgreen;
+		&.speakable {
+			animation: indicator 1.5s infinite;
+			background-color: #538fff;
 		}
 
-		&.disabled {
-			animation: none;
+		&.recording {
+			background-color: yellowgreen;
 		}
 	}
 }

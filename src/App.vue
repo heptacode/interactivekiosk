@@ -22,12 +22,19 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from "vue-property-decorator";
-import { Action } from "vuex-class";
+import { Component, Watch, Vue } from "vue-property-decorator";
+import { Action, Mutation } from "vuex-class";
+import AudioModule from "./store/modules/AudioModule";
 
 @Component({})
 export default class App extends Vue {
 	@Action("bindStock") bindStock!: Function;
+	@Mutation("stopAudio", { namespace: "AudioModule" }) stopAudio!: Function;
+
+	@Watch("$route")
+	onRouteChange() {
+		this.stopAudio();
+	}
 
 	async mounted() {
 		await this.bindStock();
