@@ -44,26 +44,23 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 			try {
 				let uploadTask = storageRef.child(`products/${data.image.name}`).putString(data.image.data, "base64");
 
-				let imageURL = "";
 				uploadTask.on(
 					"state_changed",
 					async (err) => {
 						await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 					},
 					async () => {
-						imageURL = await uploadTask.snapshot.ref.getDownloadURL();
+						return (await db.collection("stock").add({
+							name: data.name,
+							alias: data.alias.trim().split(","),
+							price: data.price,
+							quantity: data.quantity,
+							image: await uploadTask.snapshot.ref.getDownloadURL(),
+						}))
+							? true
+							: false;
 					}
 				);
-
-				return (await db.collection("stock").add({
-					name: data.name,
-					alias: data.alias.trim().split(","),
-					price: data.price,
-					quantity: data.quantity,
-					image: imageURL,
-				}))
-					? true
-					: false;
 			} catch (err) {
 				await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 				return false;

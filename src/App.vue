@@ -11,7 +11,7 @@
 		</div>
 		<header class="path-list">
 			<router-link to="/" class="path">
-				<i class="iconify path" data-icon="mdi-home" @click="$router.push('/')"></i>
+				<i class="iconify path" data-icon="mdi-home" @click="$router.replace('/')"></i>
 			</router-link>
 			<span class="path">{{ $route.name }}</span>
 		</header>

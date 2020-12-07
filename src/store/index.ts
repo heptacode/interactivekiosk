@@ -32,7 +32,7 @@ const store: StoreOptions<RootState> = {
 	},
 	actions: {
 		bindStock: firestoreAction(({ bindFirestoreRef }) => {
-			return bindFirestoreRef("stockList", db.collection("stock"));
+			return bindFirestoreRef("stockList", db.collection("stock").orderBy("name"));
 		}),
 		unbindStock: firestoreAction(({ unbindFirestoreRef }) => {
 			unbindFirestoreRef("stockList");
