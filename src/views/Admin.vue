@@ -44,63 +44,67 @@
 			</md-card>
 		</div>
 
-		<app-button v-if="!isItemCreatorVisible" class="md-fab md-mini createItem" @click="isItemCreatorVisible = true">
-			<i class="iconify" data-icon="mdi:plus"></i>
-		</app-button>
+		<transition v-if="!isItemCreatorVisible" name="fade">
+			<app-button class="md-fab md-mini createItem" @click="isItemCreatorVisible = true">
+				<i class="iconify" data-icon="mdi:plus"></i>
+			</app-button>
+		</transition>
 
-		<div v-else class="itemCreator-container">
-			<md-card class="itemCreator">
-				<form action="javascript:void(0)" @submit="submitItemCreator">
-					<div class="itemCreator-heading">
-						<h1>제품 추가</h1>
-						<app-button class="md-icon-button md-accent md-dense" @click="resetItemCreator">
-							<i class="iconify" data-icon="mdi:close"></i>
-						</app-button>
-					</div>
-
-					<div class="itemCreator-item">
-						<label class="itemCreator-item-image">
-							<span v-if="!itemCreatorData.image.blobURL">
-								<i class="iconify" data-icon="mdi:image-plus"></i>
-							</span>
-							<img v-else :src="itemCreatorData.image.blobURL" alt="" />
-							<input type="file" ref="itemCreatorImage" accept="image/*" :disabled="isItemCreating" @change="onImageChange" style="display:none" />
-						</label>
-
-						<div class="md-layout">
-							<md-field>
-								<label>제품명</label>
-								<md-input v-model="itemCreatorData.name" :disabled="isItemCreating" required></md-input>
-							</md-field>
-							<md-field>
-								<label>별칭 (쉼표로 구분)</label>
-								<md-input v-model="itemCreatorData.alias" :disabled="isItemCreating" required></md-input>
-							</md-field>
-							<md-field class="md-layout-item" style="padding-left: 0">
-								<label>가격</label>
-								<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-								<md-input type="tel" v-model="itemCreatorData.price" :disabled="isItemCreating" required></md-input>
-							</md-field>
-							<md-field class="md-layout-item">
-								<label>재고 수량</label>
-								<md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99" :disabled="isItemCreating" required></md-input>
-								<span class="md-suffix">개</span>
-							</md-field>
+		<transition v-else name="fade">
+			<div class="itemCreator-container">
+				<md-card class="itemCreator">
+					<form action="javascript:void(0)" @submit="submitItemCreator">
+						<div class="itemCreator-heading">
+							<h1>제품 추가</h1>
+							<app-button class="md-icon-button md-accent md-dense" @click="resetItemCreator">
+								<i class="iconify" data-icon="mdi:close"></i>
+							</app-button>
 						</div>
-					</div>
 
-					<md-card-actions>
-						<app-button
-							type="submit"
-							class="round submit"
-							:disabled="!itemCreatorData.name || !itemCreatorData.alias || !itemCreatorData.price || !itemCreatorData.quantity || isItemCreating"
-						>
-							{{ !isItemCreating ? "완료" : "기다리십시오 ..." }}
-						</app-button>
-					</md-card-actions>
-				</form>
-			</md-card>
-		</div>
+						<div class="itemCreator-item">
+							<label class="itemCreator-item-image">
+								<span v-if="!itemCreatorData.image.blobURL">
+									<i class="iconify" data-icon="mdi:image-plus"></i>
+								</span>
+								<img v-else :src="itemCreatorData.image.blobURL" alt="" />
+								<input type="file" ref="itemCreatorImage" accept="image/*" :disabled="isItemCreating" @change="onImageChange" style="display:none" />
+							</label>
+
+							<div class="md-layout">
+								<md-field>
+									<label>제품명</label>
+									<md-input v-model="itemCreatorData.name" :disabled="isItemCreating" required></md-input>
+								</md-field>
+								<md-field>
+									<label>별칭 (쉼표로 구분)</label>
+									<md-input v-model="itemCreatorData.alias" :disabled="isItemCreating" required></md-input>
+								</md-field>
+								<md-field class="md-layout-item" style="padding-left: 0">
+									<label>가격</label>
+									<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+									<md-input type="tel" v-model="itemCreatorData.price" :disabled="isItemCreating" required></md-input>
+								</md-field>
+								<md-field class="md-layout-item">
+									<label>재고 수량</label>
+									<md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99" :disabled="isItemCreating" required></md-input>
+									<span class="md-suffix">개</span>
+								</md-field>
+							</div>
+						</div>
+
+						<md-card-actions>
+							<app-button
+								type="submit"
+								class="round submit"
+								:disabled="!itemCreatorData.name || !itemCreatorData.alias || !itemCreatorData.price || !itemCreatorData.quantity || isItemCreating"
+							>
+								{{ !isItemCreating ? "완료" : "기다리십시오 ..." }}
+							</app-button>
+						</md-card-actions>
+					</form>
+				</md-card>
+			</div>
+		</transition>
 	</div>
 </template>
 
@@ -169,6 +173,18 @@ export default class Admin extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+	transition: 0.3s;
+	position: absolute;
+	bottom: 0;
+}
+.fade-enter,
+.fade-leave-to {
+	opacity: 0;
+	transform: translateY(100px);
+}
+
 .admin {
 	display: flex;
 	flex-direction: column;

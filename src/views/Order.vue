@@ -133,18 +133,14 @@ export default class Order extends Vue {
 <style lang="scss" scoped>
 .fade-enter-active,
 .fade-leave-active {
-	transition: 0.5s;
+	transition: 0.3s;
 	position: absolute;
 	bottom: 0;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter,
+.fade-leave-to {
 	opacity: 0;
 	transform: translateY(100px);
-}
-
-.fade-enter-to, .fade-leave /* .fade-leave-active below version 2.1.8 */ {
-	opacity: 1;
-	transform: translateY(0px);
 }
 
 .order {

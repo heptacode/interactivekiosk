@@ -50,6 +50,7 @@ export default class App extends Vue {
 
 	box-sizing: border-box;
 }
+
 button {
 	border: none;
 }
