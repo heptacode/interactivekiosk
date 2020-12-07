@@ -43,24 +43,36 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 		async CREATE_ITEM({ dispatch }, data: ItemCreatorData): Promise<boolean> {
 			try {
 				let uploadTask = storageRef.child(`products/${data.image.name}`).putString(data.image.data, "base64");
-				return await new Promise<boolean>((resolve, reject) => {
+				return new Promise<boolean>((resolve, reject) => {
 					uploadTask.on(
 						"state_changed",
+						(snapshot) => {
+							var progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+							console.log("Upload is " + progress + "% done");
+							switch (snapshot.state) {
+								case firebase.storage.TaskState.PAUSED: // or 'paused'
+									console.log("Upload is paused");
+									break;
+								case firebase.storage.TaskState.RUNNING: // or 'running'
+									console.log("Upload is running");
+									break;
+							}
+						},
 						async (err) => {
 							await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 						},
 						async () => {
-							resolve(
-								(await db.collection("stock").add({
-									name: data.name,
-									alias: data.alias.trim().split(","),
-									price: data.price,
-									quantity: data.quantity,
-									image: await uploadTask.snapshot.ref.getDownloadURL(),
-								}))
-									? true
-									: false
-							);
+							let imageURL = await uploadTask.snapshot.ref.getDownloadURL();
+							let result = (await db.collection("stock").add({
+								name: data.name,
+								alias: data.alias.trim().split(","),
+								price: data.price,
+								quantity: data.quantity,
+								image: imageURL,
+							}))
+								? true
+								: false;
+							resolve(result);
 						}
 					);
 				});

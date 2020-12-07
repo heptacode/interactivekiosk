@@ -53,7 +53,7 @@
 				<form action="javascript:void(0)" @submit="submitItemCreator">
 					<div class="itemCreator-heading">
 						<h1>제품 추가</h1>
-						<app-button class="md-icon-button md-accent md-dense" @click="(isItemCreatorVisible = false), (itemCreatorData = {})">
+						<app-button class="md-icon-button md-accent md-dense" @click="resetItemCreator">
 							<i class="iconify" data-icon="mdi:close"></i>
 						</app-button>
 					</div>
