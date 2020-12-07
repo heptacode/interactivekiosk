@@ -1,52 +1,54 @@
 <template>
 	<div class="admin">
 		<div class="product-container">
-			<div v-for="(item, idx) in stockList" :key="idx">
-				<md-card class="product">
-					<md-card-header>
-						<label>
-							<img :src="item.image" :alt="item.name" />
-							<input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange(item.id, idx)" style="display:none" />
-						</label>
-					</md-card-header>
-					<md-card-content class="product-content">
-						<div class="md-layout md-gutter">
-							<md-field class="md-layout-item">
-								<label>제품명</label>
-								<md-input v-model="item.name" @change="updateItem({ key: 'name', id: item.id, value: item.name })"></md-input>
-							</md-field>
-							<md-field class="md-layout-item">
-								<label>별칭 (쉼표로 구분)</label>
-								<md-input v-model="item.alias" @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"></md-input>
-							</md-field>
-						</div>
-						<div class="md-layout md-gutter">
-							<md-field class="md-layout-item">
-								<label>가격</label>
-								<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-								<md-input type="tel" v-model="item.price" @change="updateItem({ key: 'price', id: item.id, value: item.price })"></md-input>
-							</md-field>
-							<md-field class="md-layout-item">
-								<label>재고 수량</label>
-								<md-input type="number" v-model="item.quantity" min="0" max="99" @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"></md-input>
-								<span class="md-suffix">개</span>
-							</md-field>
-						</div>
+			<transition-group name="slide">
+				<div v-for="(item, idx) in stockList" :key="item.id">
+					<md-card class="product">
+						<md-card-header>
+							<label>
+								<img :src="item.image" :alt="item.name" />
+								<input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange(item.id, idx)" style="display:none" />
+							</label>
+						</md-card-header>
+						<md-card-content class="product-content">
+							<div class="md-layout md-gutter">
+								<md-field class="md-layout-item">
+									<label>제품명</label>
+									<md-input v-model="item.name" @change="updateItem({ key: 'name', id: item.id, value: item.name })"></md-input>
+								</md-field>
+								<md-field class="md-layout-item">
+									<label>별칭 (쉼표로 구분)</label>
+									<md-input v-model="item.alias" @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"></md-input>
+								</md-field>
+							</div>
+							<div class="md-layout md-gutter">
+								<md-field class="md-layout-item">
+									<label>가격</label>
+									<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+									<md-input type="tel" v-model="item.price" @change="updateItem({ key: 'price', id: item.id, value: item.price })"></md-input>
+								</md-field>
+								<md-field class="md-layout-item">
+									<label>재고 수량</label>
+									<md-input type="number" v-model="item.quantity" min="0" max="99" @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"></md-input>
+									<span class="md-suffix">개</span>
+								</md-field>
+							</div>
 
-						<md-card-actions>
-							<app-button class="round" @click="duplicateItem({ id: item.id, itemData: item })">
-								<i class="iconify" data-icon="mdi:content-copy"></i>
-								복제
-							</app-button>
-							<app-button class="round md-accent" @click="deleteItem(item.id)">
-								<i class="iconify" data-icon="mdi:trash"></i>
-								삭제
-							</app-button>
-						</md-card-actions>
-					</md-card-content>
-				</md-card>
-				<md-progress-bar v-if="imageUploadIdx === idx" md-mode="determinate" :md-value="imageUploadProgress"></md-progress-bar>
-			</div>
+							<md-card-actions>
+								<app-button class="round" @click="duplicateItem({ id: item.id, itemData: item })">
+									<i class="iconify" data-icon="mdi:content-copy"></i>
+									복제
+								</app-button>
+								<app-button class="round md-accent" @click="deleteItem(item.id)">
+									<i class="iconify" data-icon="mdi:trash"></i>
+									삭제
+								</app-button>
+							</md-card-actions>
+						</md-card-content>
+					</md-card>
+					<md-progress-bar v-if="imageUploadIdx === idx" md-mode="determinate" :md-value="imageUploadProgress"></md-progress-bar>
+				</div>
+			</transition-group>
 		</div>
 
 		<transition v-if="!isItemCreatorVisible" name="fade">
@@ -199,6 +201,18 @@ export default class Admin extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.slide-enter-active {
+	transition: all 0.4s ease;
+}
+.slide-leave-active {
+	transition: all 0.4s cubic-bezier(1, 0.5, 0.8, 1);
+}
+.slide-enter,
+.slide-leave-to {
+	transform: translateX(-300px);
+	opacity: 0;
+}
+
 .fade-enter-active,
 .fade-leave-active {
 	transition: 0.3s;
