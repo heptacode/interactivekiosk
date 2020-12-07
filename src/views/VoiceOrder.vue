@@ -1,14 +1,16 @@
 <template>
 	<div class="voiceorder">
-		<div class="indicator">
-			<span v-if="isSpeakable">
+		<div class="indicator" :class="{ active: isRecording }" v-if="isSpeakable || isRecording">
+			<span>
 				<i class="iconify" data-icon="mdi:microphone"></i>
 			</span>
-			<span v-else>
+		</div>
+		<div class="indicator disabled" v-else>
+			<span>
 				<i class="iconify" data-icon="mdi:microphone-off"></i>
 			</span>
 		</div>
-		{{ buyStockList }}
+		<!-- {{ buyStockList }} -->
 
 		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
@@ -44,8 +46,9 @@ export default class VoiceOrder extends Vue {
 		window.addEventListener("keydown", this.activatePTT);
 		window.addEventListener("keyup", this.deactivatePTT);
 
-		// await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		// this.isSpeakable = this.orderProcess = true;
+		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
+		this.isSpeakable = true;
+		this.isOrderProcess = true;
 	}
 	activatePTT(event: KeyboardEvent) {
 		if (event.code !== "Space" || this.isRecording || !this.isSpeakable || !this.isOrderProcess) return;
@@ -63,6 +66,8 @@ export default class VoiceOrder extends Vue {
 	async parseText(text: string) {
 		let unavailableItems: StockItem[] = []; // 주문 불가능한 상품
 
+		this.isSpeakable = false;
+
 		if (text == "완료" || text == "종료") return this.checkout();
 
 		try {
@@ -72,7 +77,6 @@ export default class VoiceOrder extends Vue {
 					.flat()
 					.join("|")}).*?(?:([1-9]+[0-9]*)|(열|스물|서른|마흔|쉰|예순|일흔|여든|아흔)(하나|둘|셋|다섯|여섯|일곱|여덟|아홉)?|(스무)|(한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉))`
 			);
-			console.log(reg);
 
 			// FIXME: 여러개 상품 지원
 
@@ -136,10 +140,38 @@ export default class VoiceOrder extends Vue {
 	justify-content: center;
 	align-items: center;
 
-	width: 100vw;
-	height: 100vh;
+	width: 100%;
+	height: 100%;
+
+	overflow: hidden;
+
+	background: radial-gradient(circle, #538fff 15%, white 17.5%);
+
+	@keyframes mic {
+		0% {
+			font-size: 7em;
+		}
+		50% {
+			font-size: 8em;
+		}
+		100% {
+			font-size: 7em;
+		}
+	}
 
 	.indicator {
+		color: white;
+		font-size: 7em;
+
+		animation: mic 2s infinite;
+
+		&.active {
+			color: yellowgreen;
+		}
+
+		&.disabled {
+			animation: none;
+		}
 	}
 }
 </style>

@@ -32,35 +32,40 @@
 		</div>
 
 		<div class="shoppingCart-container">
-			<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
-				<i class="iconify" data-icon="mdi:chevron-up"></i>
-				장바구니 열기
-			</app-button>
+			<transition name="fade">
+				<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
+					<i class="iconify" data-icon="mdi:chevron-up"></i>
+					장바구니 열기
+				</app-button>
+			</transition>
 
 			<!-- <shoppingCart> -->
-			<md-card v-else-if="(shoppingCartVisible && shoppingCart.length) || isElectron" class="shoppingCart">
-				<div class="shoppingCart-heading">
-					<h1>장바구니</h1>
-					<app-button v-if="!isElectron" class="round" @click="shoppingCartVisible = false">
-						<i class="iconify" data-icon="mdi:chevron-down"></i>
-						숨기기
-					</app-button>
-				</div>
+			<transition name="fade">
+				<md-card class="shoppingCart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
+					<div class="shoppingCart-heading">
+						<h1>장바구니</h1>
+						<app-button v-if="!isElectron" class="round" @click="shoppingCartVisible = false">
+							<i class="iconify" data-icon="mdi:chevron-down"></i>
+							숨기기
+						</app-button>
+					</div>
 
-				<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
-					<img :src="item.image" alt="" />
-					<h2>{{ item.name }}</h2>
+					<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
+						<img :src="item.image" alt="" />
+						<h2>{{ item.name }}</h2>
 
-					<md-card-actions class="shoppingCart-actions">
-						<app-button class="md-icon-button" @click="decreaseItem(item)">-</app-button>
-						<h4>&times;{{ item.quantity }}</h4>
-						<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
-					</md-card-actions>
-					<h4>{{ numberFormat(item.price * item.quantity) }}원</h4>
-				</div>
+						<md-card-actions class="shoppingCart-actions">
+							<app-button class="md-icon-button" @click="decreaseItem(item)">-</app-button>
+							<h4>&times;{{ item.quantity }}</h4>
+							<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
+						</md-card-actions>
+						<h4>{{ numberFormat(item.price * item.quantity) }}원</h4>
+					</div>
 
-				<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
-			</md-card>
+					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout">{{ getTotalPrice }}원 결제하기</app-button>
+				</md-card>
+			</transition>
+
 			<!-- </shoppingCart> -->
 		</div>
 
@@ -126,6 +131,22 @@ export default class Order extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.fade-enter-active,
+.fade-leave-active {
+	transition: 0.5s;
+	position: absolute;
+	bottom: 0;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+	opacity: 0;
+	transform: translateY(100px);
+}
+
+.fade-enter-to, .fade-leave /* .fade-leave-active below version 2.1.8 */ {
+	opacity: 1;
+	transform: translateY(0px);
+}
+
 .order {
 	display: flex;
 	flex-direction: column;
