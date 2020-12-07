@@ -185,7 +185,7 @@ export default class Order extends Vue {
 
 			padding: 20px;
 
-			box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.5);
+			box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
 
 			.shoppingCart-heading {
 				display: flex;
@@ -204,7 +204,7 @@ export default class Order extends Vue {
 				width: 100%;
 
 				padding: 10px 0;
-				border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+				border-bottom: 0.5px solid rgba(#000, 0.15);
 
 				h2 {
 					padding: 0 4px;
@@ -246,7 +246,7 @@ export default class Order extends Vue {
 
 		padding: 30px;
 
-		box-shadow: 1px 0 40px rgba(0, 0, 0, 0.1);
+		box-shadow: 1px 0 40px rgba(#000, 0.1);
 	}
 
 	.shoppingCart-container {
@@ -278,7 +278,7 @@ export default class Order extends Vue {
 				align-items: center;
 
 				padding: 20px 0;
-				border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+				border-bottom: 0.5px solid rgba(#000, 0.15);
 
 				img {
 					width: 50px;

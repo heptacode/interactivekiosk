@@ -3,7 +3,7 @@
 		<div class="product-container">
 			<md-card v-for="(item, idx) in stockList" :key="idx" class="product">
 				<md-card-header>
-					<img :src="`assets/products/${item.image}`" />
+					<img :src="`assets/products/${item.image}`" @click="/*updateImage(item.id)*/" />
 				</md-card-header>
 				<md-card-content class="product-content">
 					<div class="md-layout md-gutter">
@@ -43,33 +43,51 @@
 			</md-card>
 		</div>
 
-		<app-button class="md-fab md-mini createItem" @click="isItemCreatorVisible = true">
+		<app-button v-if="!isItemCreatorVisible" class="md-fab md-mini createItem" @click="isItemCreatorVisible = true">
 			<i class="iconify" data-icon="mdi:plus"></i>
 		</app-button>
 
-		<div v-if="isItemCreatorVisible" class="itemCreator-container">
+		<div v-else class="itemCreator-container">
 			<md-card class="itemCreator">
 				<div class="itemCreator-heading">
 					<h1>제품 추가</h1>
-					<app-button class="md-icon-button md-accent md-dense" @click="(isItemCreatorVisible = false), (itemCreatorData = [])">
+					<app-button class="md-icon-button md-accent md-dense" @click="(isItemCreatorVisible = false), (itemCreatorData = {})">
 						<i class="iconify" data-icon="mdi:close"></i>
 					</app-button>
 				</div>
 
 				<div class="itemCreator-item">
-					<app-button class="md-icon-button imageContainer">
+					<label class="itemCreator-item-image">
 						<span v-if="!itemCreatorData.image">
-							<i class="iconify" data-icon="mdi:plus"></i>
+							<i class="iconify" data-icon="mdi:image-plus"></i>
 						</span>
-						<img v-else :src="`assets/products/${itemCreatorData.image}`" alt="" />
-					</app-button>
-					<h2>{{ itemCreatorData.name }}</h2>
+						<img v-else :src="itemCreatorData.image.blobURL" alt="" />
+						<input type="file" ref="itemCreatorImage" accept="image/*" @change="onImageChange" style="display:none" />
+					</label>
 
-					<md-card-actions class="itemCreator-actions"> </md-card-actions>
-					<h4>{{ numberFormat(itemCreatorData.price * itemCreatorData.quantity) }}원</h4>
+					<div class="md-layout">
+						<md-field>
+							<label>제품명</label>
+							<md-input v-model="itemCreatorData.name"></md-input>
+						</md-field>
+						<md-field>
+							<label>별칭 (쉼표로 구분)</label>
+							<md-input v-model="itemCreatorData.alias"></md-input>
+						</md-field>
+						<md-field class="md-layout-item" style="padding-left: 0">
+							<label>가격</label>
+							<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+							<md-input type="tel" v-model="itemCreatorData.price"></md-input>
+						</md-field>
+						<md-field class="md-layout-item">
+							<label>재고 수량</label>
+							<md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99"></md-input>
+							<span class="md-suffix">개</span>
+						</md-field>
+					</div>
 				</div>
 
-				<app-button class="round submit" :disabled="itemCreatorData.name && itemCreatorData.price && itemCreatorData.quantity" @click="createItem(itemCreatorData)">
+				<app-button class="round submit" :disabled="!itemCreatorData.name || !itemCreatorData.price || !itemCreatorData.quantity" @click="createItem(itemCreatorData)">
 					완료
 				</app-button>
 			</md-card>
@@ -80,10 +98,11 @@
 <script lang="ts">
 import { Component, Vue } from "vue-property-decorator";
 
-import { StockItem } from "@/schema";
+import { StockItem, ItemCreatorData } from "@/schema";
 import { Action, State } from "vuex-class";
 
 import numberFormat from "@/utils/numberFormat";
+import imageToBase64 from "@/utils/imageToBase64";
 
 @Component({})
 export default class Admin extends Vue {
@@ -96,10 +115,23 @@ export default class Admin extends Vue {
 	@Action("DELETE_ITEM", { namespace: "FirestoreModule" }) deleteItem!: Function;
 
 	isItemCreatorVisible: boolean = false;
-	itemCreatorData: StockItem = {} as StockItem;
+	itemCreatorData: ItemCreatorData = {} as ItemCreatorData;
 
 	numberFormat(number: number) {
 		return numberFormat(number);
+	}
+
+	async onImageChange() {
+		if (this.itemCreatorData.image.blobURL !== "") URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
+
+		let imageDOM = this.$refs.itemCreatorImage["files"][0];
+		let blobURL = URL.createObjectURL(imageDOM);
+
+		this.itemCreatorData.image = {
+			name: imageDOM.name,
+			blobURL: blobURL,
+			data: await imageToBase64(blobURL),
+		};
 	}
 }
 </script>
@@ -132,7 +164,7 @@ export default class Admin extends Vue {
 
 			padding: 20px;
 
-			border-bottom: 1px solid rgba(0, 0, 0, 0.15);
+			border-bottom: 1px solid rgba(#000, 0.15);
 			img {
 				display: block;
 
@@ -188,7 +220,7 @@ export default class Admin extends Vue {
 
 			padding: 20px;
 
-			box-shadow: 0 3px 5px -1px rgba(0, 0, 0, 0.5);
+			box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
 
 			.itemCreator-heading {
 				display: flex;
@@ -201,29 +233,46 @@ export default class Admin extends Vue {
 
 			.itemCreator-item {
 				display: flex;
-				justify-content: space-between;
-				align-items: center;
+				flex-direction: column;
+				align-items: flex-start;
 
 				width: 100%;
 
 				padding: 10px 0;
 
-				border-bottom: 0.5px solid rgba(0, 0, 0, 0.15);
+				border-bottom: 0.5px solid rgba(#000, 0.15);
 
-				h2 {
-					padding: 0 4px;
-				}
-				img {
+				.itemCreator-item-image {
+					display: flex;
+					justify-content: center;
+					align-items: center;
+
 					width: 50px;
 					height: 50px;
+
+					margin-left: 10px;
+
 					border-radius: 50%;
+
+					box-shadow: 1px 1px 8px rgba(#000, 0.15);
+					transition: 0.3s;
+
+					cursor: pointer;
+
+					&:hover {
+						box-shadow: 1px 1px 8px rgba(#000, 0.25);
+					}
+
+					img {
+						width: 50px;
+						height: 50px;
+
+						border-radius: 50%;
+					}
 				}
 			}
-
-			.itemCreator-actions {
-				h4 {
-					padding: 0 10px;
-				}
+			.md-field {
+				margin: 15px;
 			}
 			.submit {
 				margin-top: 20px;

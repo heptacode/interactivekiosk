@@ -1,11 +1,11 @@
 import { Module } from "vuex";
 import { RootState } from "@/store/index";
 
-import { db } from "@/DB";
+import { db, storageRef } from "@/DB";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { StockItem } from "@/schema";
+import { StockItem, ItemCreatorData } from "@/schema";
 
 export interface IFirestoreModule {}
 
@@ -40,14 +40,27 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 			}
 		},
 		// Admin
-		async CREATE_ITEM({ dispatch }, data: { name: string; alias: string[]; price: number; quantity: number; image: string }): Promise<boolean> {
+		async CREATE_ITEM({ dispatch }, data: ItemCreatorData): Promise<boolean> {
 			try {
+				let uploadTask = storageRef.child(`products/${data.image.name}`).putString(data.image.data, "base64");
+
+				let imageURL = "";
+				uploadTask.on(
+					"state_changed",
+					async (err) => {
+						await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
+					},
+					async () => {
+						imageURL = await uploadTask.snapshot.ref.getDownloadURL();
+					}
+				);
+
 				return (await db.collection("stock").add({
 					name: data.name,
 					alias: data.alias,
 					price: data.price,
 					quantity: data.quantity,
-					image: data.image,
+					image: imageURL,
 				}))
 					? true
 					: false;

@@ -1,5 +1,6 @@
 import firebase from "firebase/app";
 import "firebase/firestore";
+import "firebase/storage";
 import "dotenv/config";
 
 export const db = firebase
@@ -14,3 +15,5 @@ export const db = firebase
 		measurementId: "G-4PXCEVHDC0",
 	})
 	.firestore();
+
+export const storageRef = firebase.storage().ref();
