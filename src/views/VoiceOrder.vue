@@ -136,6 +136,9 @@ export default class VoiceOrder extends Vue {
 	justify-content: center;
 	align-items: center;
 
+	width: 100vw;
+	height: 100vh;
+
 	.indicator {
 	}
 }

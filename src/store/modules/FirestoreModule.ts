@@ -43,24 +43,27 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 		async CREATE_ITEM({ dispatch }, data: ItemCreatorData): Promise<boolean> {
 			try {
 				let uploadTask = storageRef.child(`products/${data.image.name}`).putString(data.image.data, "base64");
-
-				uploadTask.on(
-					"state_changed",
-					async (err) => {
-						await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
-					},
-					async () => {
-						return (await db.collection("stock").add({
-							name: data.name,
-							alias: data.alias.trim().split(","),
-							price: data.price,
-							quantity: data.quantity,
-							image: await uploadTask.snapshot.ref.getDownloadURL(),
-						}))
-							? true
-							: false;
-					}
-				);
+				return await new Promise<boolean>((resolve, reject) => {
+					uploadTask.on(
+						"state_changed",
+						async (err) => {
+							await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
+						},
+						async () => {
+							resolve(
+								(await db.collection("stock").add({
+									name: data.name,
+									alias: data.alias.trim().split(","),
+									price: data.price,
+									quantity: data.quantity,
+									image: await uploadTask.snapshot.ref.getDownloadURL(),
+								}))
+									? true
+									: false
+							);
+						}
+					);
+				});
 			} catch (err) {
 				await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 				return false;
