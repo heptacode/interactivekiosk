@@ -17,6 +17,7 @@ export interface RootState {
 	isElectron: boolean;
 	earphoneDetection: boolean;
 	stockList: StockItem[];
+	helloLoop: number;
 }
 
 const store: StoreOptions<RootState> = {
@@ -24,10 +25,14 @@ const store: StoreOptions<RootState> = {
 		isElectron: process.env.IS_ELECTRON ? true : false,
 		earphoneDetection: false,
 		stockList: [],
+		helloLoop: 0,
 	},
 	mutations: {
 		activateEarphoneDetection(state) {
 			state.earphoneDetection = true;
+		},
+		stopHelloLoop(state) {
+			clearInterval(state.helloLoop);
 		},
 		...vuexfireMutations,
 	},
@@ -38,6 +43,9 @@ const store: StoreOptions<RootState> = {
 		unbindStock: firestoreAction(({ unbindFirestoreRef }) => {
 			unbindFirestoreRef("stockList");
 		}),
+		startHelloLoop({ state, dispatch }) {
+			state.helloLoop = window.setInterval(() => dispatch("AudioModule/playAudio", { isLocal: true, data: "home/hello" }), 16000);
+		},
 		async playItems({ state, dispatch }): Promise<boolean> {
 			let stockList: string = "";
 			state.stockList.forEach((item) => {

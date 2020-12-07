@@ -14,7 +14,7 @@
 			</div>
 		</div>
 		<div class="actions">
-			<app-button v-if="isElectron && !earphoneDetection" class="app-button" @click="activateEarphoneDetection">이어폰 감지 활성화</app-button>
+			<app-button v-if="isElectron && !earphoneDetection" class="app-button" @click="activateEarphoneDetection(), startHelloLoop()">이어폰 감지 활성화</app-button>
 			<app-button class="app-button">도움 요청</app-button>
 			<app-button class="app-button" @click="$router.replace('order')">시작하기</app-button>
 		</div>
@@ -32,6 +32,7 @@ export default class Home extends Vue {
 
 	@Mutation("activateEarphoneDetection") activateEarphoneDetection!: Function;
 
+	@Action("startHelloLoop") startHelloLoop!: Function;
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 
 	@Watch("earphoneDetection")
@@ -49,18 +50,10 @@ export default class Home extends Vue {
 					console.error(err);
 				}
 		});
+
+		if (this.earphoneDetection) this.startHelloLoop();
 	}
 }
-// const loopHello = async () => {
-// 	if (this.getEarphoneDetection) {
-// 		await this.playAudio({ isLocal: true, url: "home/hello" });
-// 	}
-// 	setTimeout(async () => {
-// 		loopHello();
-// 	}, 2000);
-// 	return;
-// };
-// loopHello();
 </script>
 
 <style lang="scss" scoped>
@@ -146,7 +139,7 @@ export default class Home extends Vue {
 	.actions {
 		display: flex;
 		flex-direction: column;
-		padding-top: 30px;
+		margin-top: 40px;
 
 		width: 100%;
 		max-width: 500px;

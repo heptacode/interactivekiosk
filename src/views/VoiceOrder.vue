@@ -9,7 +9,6 @@
 			</span>
 		</div>
 
-		<!-- <shoppingCart> -->
 		<div class="shoppingCart-container">
 			<transition name="fade">
 				<md-card class="shoppingCart" v-if="shoppingCart.length">
@@ -29,8 +28,23 @@
 				</md-card>
 			</transition>
 		</div>
-		<!-- </shoppingCart> -->
 
+		<transition name="fade">
+			<div v-if="isCheckoutVisible" class="checkout-container">
+				<md-card class="checkout">
+					<div class="checkout-heading">
+						<h1>결제하기</h1>
+						<app-button class="round md-accent" @click="isCheckoutVisible = false">
+							<i class="iconify" data-icon="mdi:close"></i>
+							취소하기
+						</app-button>
+					</div>
+					<img src="/assets/images/credit_card.svg" alt="Credit Card" />
+
+					<h2 class="total">{{ getTotalPrice }}원을 결제하려면 카드를 삽입해주세요.</h2>
+				</md-card>
+			</div>
+		</transition>
 		<STT v-model="isRecording" @record="parseText"></STT>
 	</div>
 </template>
@@ -61,6 +75,8 @@ export default class VoiceOrder extends Vue {
 	isRecording: boolean = false;
 	isSpeakable: boolean = false;
 	isOrderProcess: boolean = false;
+
+	isCheckoutVisible: boolean = false;
 
 	shoppingCart: StockItem[] = []; // 현 주문 상품
 
@@ -180,7 +196,7 @@ export default class VoiceOrder extends Vue {
 		this.isSpeakable = false;
 		this.isOrderProcess = false;
 
-		// TODO: 결제 (buyStockList)
+		this.isCheckoutVisible = true;
 
 		await this.playAudio({ isLocal: true, data: "voiceorder/checkout_complete" });
 	}

@@ -1,53 +1,56 @@
 <template>
 	<div class="admin">
 		<div class="product-container">
-			<md-card v-for="(item, idx) in stockList" :key="idx" class="product">
-				<md-card-header>
-					<label>
-						<img :src="item.image" :alt="item.name" />
-						<input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange" style="display:none" />
-					</label>
-				</md-card-header>
-				<md-card-content class="product-content">
-					<div class="md-layout md-gutter">
-						<md-field class="md-layout-item">
-							<label>제품명</label>
-							<md-input v-model="item.name" @change="updateItem({ key: 'name', id: item.id, value: item.name })"></md-input>
-						</md-field>
-						<md-field class="md-layout-item">
-							<label>별칭 (쉼표로 구분)</label>
-							<md-input v-model="item.alias" @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"></md-input>
-						</md-field>
-					</div>
-					<div class="md-layout md-gutter">
-						<md-field class="md-layout-item">
-							<label>가격</label>
-							<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-							<md-input type="tel" v-model="item.price" @change="updateItem({ key: 'price', id: item.id, value: item.price })"></md-input>
-						</md-field>
-						<md-field class="md-layout-item">
-							<label>재고 수량</label>
-							<md-input type="number" v-model="item.quantity" min="0" max="99" @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"></md-input>
-							<span class="md-suffix">개</span>
-						</md-field>
-					</div>
+			<div v-for="(item, idx) in stockList" :key="idx">
+				<md-card class="product">
+					<md-card-header>
+						<label>
+							<img :src="item.image" :alt="item.name" />
+							<input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange(item.id, idx)" style="display:none" />
+						</label>
+					</md-card-header>
+					<md-card-content class="product-content">
+						<div class="md-layout md-gutter">
+							<md-field class="md-layout-item">
+								<label>제품명</label>
+								<md-input v-model="item.name" @change="updateItem({ key: 'name', id: item.id, value: item.name })"></md-input>
+							</md-field>
+							<md-field class="md-layout-item">
+								<label>별칭 (쉼표로 구분)</label>
+								<md-input v-model="item.alias" @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"></md-input>
+							</md-field>
+						</div>
+						<div class="md-layout md-gutter">
+							<md-field class="md-layout-item">
+								<label>가격</label>
+								<span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
+								<md-input type="tel" v-model="item.price" @change="updateItem({ key: 'price', id: item.id, value: item.price })"></md-input>
+							</md-field>
+							<md-field class="md-layout-item">
+								<label>재고 수량</label>
+								<md-input type="number" v-model="item.quantity" min="0" max="99" @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"></md-input>
+								<span class="md-suffix">개</span>
+							</md-field>
+						</div>
 
-					<md-card-actions>
-						<app-button class="round" @click="duplicateItem({ id: item.id, itemData: item })">
-							<i class="iconify" data-icon="mdi:content-copy"></i>
-							복제
-						</app-button>
-						<app-button class="round md-accent" @click="deleteItem(item.id)">
-							<i class="iconify" data-icon="mdi:trash"></i>
-							삭제
-						</app-button>
-					</md-card-actions>
-				</md-card-content>
-			</md-card>
+						<md-card-actions>
+							<app-button class="round" @click="duplicateItem({ id: item.id, itemData: item })">
+								<i class="iconify" data-icon="mdi:content-copy"></i>
+								복제
+							</app-button>
+							<app-button class="round md-accent" @click="deleteItem(item.id)">
+								<i class="iconify" data-icon="mdi:trash"></i>
+								삭제
+							</app-button>
+						</md-card-actions>
+					</md-card-content>
+				</md-card>
+				<md-progress-bar v-if="imageUploadIdx === idx" md-mode="determinate" :md-value="imageUploadProgress"></md-progress-bar>
+			</div>
 		</div>
 
 		<transition v-if="!isItemCreatorVisible" name="fade">
-			<app-button class="md-fab md-mini createItem" @click="isItemCreatorVisible = true">
+			<app-button class="md-fab createItem" @click="isItemCreatorVisible = true">
 				<i class="iconify" data-icon="mdi:plus"></i>
 			</app-button>
 		</transition>
@@ -124,6 +127,7 @@ import { Item } from "electron";
 export default class Admin extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("stockList") stockList!: StockItem[];
+	@State("imageUploadProgress", { namespace: "FirestoreModule" }) imageUploadProgress!: number;
 
 	@Action("CREATE_ITEM", { namespace: "FirestoreModule" }) createItem!: Function;
 	@Action("UPDATE_ITEM", { namespace: "FirestoreModule" }) updateItem!: Function;
@@ -133,6 +137,7 @@ export default class Admin extends Vue {
 	isItemCreatorVisible: boolean = false;
 	itemCreatorData: ItemCreatorData = {} as ItemCreatorData;
 	isItemCreating: boolean = false;
+	imageUploadIdx: number = -1;
 
 	mounted() {
 		this.resetItemCreator();
@@ -153,15 +158,23 @@ export default class Admin extends Vue {
 		return numberFormat(number);
 	}
 
-	async onImageChange() {
-		let imageDOM = this.$refs.itemCreatorImage["files"][0];
+	async onImageChange(id: string, idx: number) {
+		let imageDOM = this.$refs.image[idx]["files"][0];
 		let blobURL = URL.createObjectURL(imageDOM);
 
-		this.itemCreatorData.image = {
+		let image = {
 			name: imageDOM.name,
 			blobURL: blobURL,
 			data: await imageToBase64(blobURL),
 		};
+
+		this.imageUploadIdx = idx;
+
+		let result = await this.updateItem({ key: "image", id: id, value: image });
+		if (result) {
+			this.imageUploadIdx = -1;
+			this.imageUploadProgress = 0;
+		}
 	}
 
 	async onItemCreatorImageChange() {
@@ -216,6 +229,7 @@ export default class Admin extends Vue {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		overflow-y: scroll;
 
 		.product {
 			display: flex;
@@ -235,6 +249,9 @@ export default class Admin extends Vue {
 				height: 60px;
 
 				border-radius: 50%;
+				box-shadow: 0 2px 5px rgba(#000, 0.3);
+
+				cursor: pointer;
 			}
 
 			.md-layout-item {
@@ -253,6 +270,8 @@ export default class Admin extends Vue {
 		right: 12px;
 		bottom: 10px;
 		left: auto;
+
+		font-size: 2em;
 	}
 
 	.itemCreator-container {

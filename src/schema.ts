@@ -14,5 +14,11 @@ export interface ItemCreatorData {
 	alias?: string;
 	price: number;
 	quantity: number;
-	image: { name: string; blobURL: string; data: string };
+	image: ImageItem;
+}
+
+export interface ImageItem {
+	name: string;
+	blobURL: string;
+	data: string;
 }

@@ -5,12 +5,17 @@ import { db, storageRef } from "@/DB";
 
 import firebase from "firebase/app";
 import "firebase/firestore";
-import { StockItem, ItemCreatorData } from "@/schema";
+import { StockItem, ItemCreatorData, ImageItem } from "@/schema";
 
-export interface IFirestoreModule {}
+export interface IFirestoreModule {
+	imageUploadProgress: number;
+}
 
 const FirestoreModule: Module<IFirestoreModule, RootState> = {
 	namespaced: true,
+	state: {
+		imageUploadProgress: 0,
+	},
 	actions: {
 		async LOG({}, data: { type: string; message: string }): Promise<void> {
 			try {
@@ -24,72 +29,52 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 				console.error(`LOG: Unexpected Error While Logging`);
 			}
 		},
-		async CREATE_TRANSACTION({ dispatch }, data: { type: string; data: object; totalPrice: number }): Promise<boolean> {
-			try {
-				return (await db.collection("transactions").add({
-					timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-					type: data.type,
-					data: data.data,
-					totalPrice: data.totalPrice,
-				}))
-					? true
-					: false;
-			} catch (err) {
-				await dispatch("LOG", { type: "error", message: `트랜잭션 추가 실패 : ${err}` });
-				return false;
-			}
+		async UPLOAD_IMAGE({ state, dispatch }, imageItem: ImageItem): Promise<string> {
+			let uploadTask = storageRef.child(`products/${imageItem.name}`).putString(imageItem.data, "base64");
+			return new Promise<string>((resolve, reject) => {
+				uploadTask.on(
+					"state_changed",
+					(snapshot) => {
+						state.imageUploadProgress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+					},
+					async (err) => {
+						await dispatch("LOG", { type: "error", message: `UPLOAD_IMAGE : ${err}` });
+					},
+					async () => {
+						resolve(await uploadTask.snapshot.ref.getDownloadURL());
+					}
+				);
+			});
 		},
 		// Admin
 		async CREATE_ITEM({ dispatch }, data: ItemCreatorData): Promise<boolean> {
 			try {
-				let uploadTask = storageRef.child(`products/${data.image.name}`).putString(data.image.data, "base64");
-				return new Promise<boolean>((resolve, reject) => {
-					uploadTask.on(
-						"state_changed",
-						(snapshot) => {
-							let progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-							console.log(`업로드 중 : ${progress}%`);
-							switch (snapshot.state) {
-								case firebase.storage.TaskState.PAUSED: // or 'paused'
-									console.log("업로드 일시 중지됨");
-									break;
-								case firebase.storage.TaskState.RUNNING: // or 'running'
-									console.log("업로드 중");
-									break;
-							}
-						},
-						async (err) => {
-							await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
-						},
-						async () => {
-							let imageURL = await uploadTask.snapshot.ref.getDownloadURL();
-							let result = (await db.collection("stock").add({
-								name: data.name,
-								alias: data.alias ? data.alias.trim().split(",") : [],
-								price: data.price,
-								quantity: data.quantity,
-								image: imageURL,
-							}))
-								? true
-								: false;
-							resolve(result);
-						}
-					);
-				});
+				let imageURL = await dispatch("UPLOAD_IMAGE", data.image);
+				return (await db.collection("stock").add({
+					name: data.name,
+					alias: data.alias ? data.alias.trim().split(",") : [],
+					price: data.price,
+					quantity: data.quantity,
+					image: imageURL,
+				}))
+					? true
+					: false;
 			} catch (err) {
 				await dispatch("LOG", { type: "error", message: `CREATE_ITEM : ${err}` });
 				return false;
 			}
 		},
-		async UPDATE_ITEM({ dispatch }, data: { id: string; key: string; value: string | number }): Promise<boolean> {
+		async UPDATE_ITEM({ dispatch }, data: { id: string; key: string; value: string | string[] | number | ImageItem }): Promise<boolean> {
 			try {
-				let value =
-					data.key === "alias"
-						? data.value
-								.toString()
-								.trim()
-								.split(",")
-						: data.value;
+				let value = data.value;
+				if (data.key === "alias") {
+					value = data.value
+						.toString()
+						.trim()
+						.split(",");
+				} else if (data.key === "image") {
+					value = await dispatch("UPLOAD_IMAGE", data.value);
+				}
 
 				await db
 					.collection("stock")

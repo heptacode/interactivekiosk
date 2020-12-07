@@ -2,6 +2,7 @@
 	<div id="app">
 		<div class="topbar">
 			<div class="actions">
+				<div class="admin" @dblclick="$router.replace('/admin')"></div>
 				<button v-if="isMac" class="close" @mousedown="closeApp"></button>
 			</div>
 			<div class="menu">
@@ -30,10 +31,12 @@ import AudioModule from "./store/modules/AudioModule";
 export default class App extends Vue {
 	@Action("bindStock") bindStock!: Function;
 	@Mutation("stopAudio", { namespace: "AudioModule" }) stopAudio!: Function;
+	@Mutation("stopHelloLoop") stopHelloLoop!: Function;
 
 	@Watch("$route")
 	onRouteChange() {
 		this.stopAudio();
+		this.stopHelloLoop();
 	}
 
 	async mounted() {
@@ -109,6 +112,13 @@ html {
 			top: 0;
 			display: flex;
 			justify-content: flex-end;
+
+			.admin {
+				width: 60px;
+				height: 60px;
+				cursor: move;
+			}
+
 			.close {
 				-webkit-app-region: no-drag;
 
@@ -121,6 +131,7 @@ html {
 				height: 20px;
 				z-index: 10000;
 			}
+
 			z-index: 1000;
 		}
 		.menu {
@@ -142,7 +153,7 @@ html {
 	.content {
 		flex: 1;
 
-		overflow-y: scroll;
+		overflow-y: hidden;
 	}
 
 	.path-list {

@@ -39,7 +39,6 @@
 				</app-button>
 			</transition>
 
-			<!-- <shoppingCart> -->
 			<transition name="fade">
 				<md-card class="shoppingCart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
 					<div class="shoppingCart-heading">
@@ -47,6 +46,10 @@
 						<app-button v-if="!isElectron" class="round" @click="shoppingCartVisible = false">
 							<i class="iconify" data-icon="mdi:chevron-down"></i>
 							숨기기
+						</app-button>
+						<app-button v-else class="round md-accent" :disabled="!shoppingCart.length" @click="shoppingCart.splice(0, shoppingCart.length)">
+							<i class="iconify" data-icon="mdi:trash"></i>
+							비우기
 						</app-button>
 					</div>
 
@@ -62,13 +65,27 @@
 						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
 					</div>
 
-					<app-button v-if="shoppingCart.length" class="round checkout" @click="checkout"> {{ getTotalPrice }}원 결제하기 </app-button>
+					<app-button class="round checkout" :disabled="!shoppingCart.length" @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"> {{ getTotalPrice }}원 결제하기 </app-button>
 				</md-card>
 			</transition>
-			<!-- </shoppingCart> -->
 		</div>
 
-		<div class="sidebar"></div>
+		<transition name="fade">
+			<div v-if="isCheckoutVisible" class="checkout-container">
+				<md-card class="checkout">
+					<div class="checkout-heading">
+						<h1>결제하기</h1>
+						<app-button class="round md-accent" @click="(isCheckoutVisible = false), (shoppingCartVisible = true)">
+							<i class="iconify" data-icon="mdi:close"></i>
+							취소하기
+						</app-button>
+					</div>
+					<img src="/assets/images/credit_card.svg" alt="Credit Card" />
+
+					<h2 class="total">{{ getTotalPrice }}원을 결제하려면 {{ !isElectron ? "결제 수단을 선택해주세요." : "카드를 삽입해주세요." }}</h2>
+				</md-card>
+			</div>
+		</transition>
 	</div>
 </template>
 
@@ -87,6 +104,8 @@ export default class Order extends Vue {
 
 	shoppingCartVisible: boolean = false;
 	shoppingCart: StockItem[] = [];
+
+	isCheckoutVisible: boolean = false;
 
 	numberFormat(number: number) {
 		return numberFormat(number);
@@ -122,10 +141,6 @@ export default class Order extends Vue {
 		});
 		return numberFormat(total);
 	}
-
-	checkout() {
-		// TODO : 결제
-	}
 }
 </script>
 
@@ -153,6 +168,8 @@ export default class Order extends Vue {
 		flex-direction: column;
 		align-items: center;
 
+		overflow-y: scroll;
+
 		.product {
 			width: 100%;
 			.md-ripple {
@@ -179,7 +196,7 @@ export default class Order extends Vue {
 		right: 0;
 
 		margin: 0 auto;
-		margin-bottom: 10px;
+		margin-bottom: 15px;
 
 		display: flex;
 		justify-content: center;
@@ -239,7 +256,7 @@ export default class Order extends Vue {
 			}
 			.shoppingCart-actions {
 				flex: 1;
-				h4 {
+				h3 {
 					padding: 0 10px;
 				}
 			}
@@ -267,11 +284,16 @@ export default class Order extends Vue {
 		column-gap: 30px;
 
 		width: 70%;
-		height: fit-content;
 
-		padding: 30px;
+		padding: 40px;
 
 		box-shadow: 1px 0 40px rgba(#000, 0.1);
+
+		overflow-y: scroll;
+
+		.product:last-child {
+			margin-bottom: 30px;
+		}
 	}
 
 	.shoppingCart-container {
@@ -290,7 +312,13 @@ export default class Order extends Vue {
 			background-color: transparent;
 			margin-top: 20px;
 
+			height: 100%;
+
 			.shoppingCart-heading {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+
 				margin-bottom: 40px;
 				h1 {
 					font-size: 2.5em;
@@ -318,10 +346,69 @@ export default class Order extends Vue {
 			}
 
 			.checkout {
-				margin-top: 40px;
+				position: absolute;
+				top: auto;
+				bottom: 10px;
+
 				width: 100%;
 				height: 50px;
 			}
+		}
+	}
+}
+
+.checkout-container {
+	position: fixed;
+	top: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	display: flex;
+	justify-content: center;
+	align-items: flex-end;
+
+	background-color: rgba(#000, 0.5);
+
+	width: 100%;
+	height: 100%;
+
+	z-index: 10001;
+
+	.checkout {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+
+		border-radius: 20px;
+
+		margin-bottom: 15px;
+
+		width: 100%;
+		max-width: 500px;
+
+		padding: 20px;
+
+		box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
+
+		.checkout-heading {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+
+			width: 100%;
+			margin-bottom: 10px;
+		}
+
+		img {
+			display: block;
+
+			width: calc(50% - 32px);
+			max-height: 370px;
+		}
+
+		.total {
+			margin-top: 20px;
 		}
 	}
 }
