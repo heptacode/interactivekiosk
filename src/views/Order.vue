@@ -58,9 +58,9 @@
 						<h2>{{ item.name }}</h2>
 
 						<md-card-actions class="shoppingCart-actions">
-							<app-button class="md-icon-button" @click="decreaseItem(item)">-</app-button>
+							<app-button class="md-icon-button md-dense" @click="decreaseItem(item)">-</app-button>
 							<h3>&times;{{ item.quantity }}</h3>
-							<app-button class="md-icon-button" @click="increaseItem(item)">+</app-button>
+							<app-button class="md-icon-button md-dense" @click="increaseItem(item)">+</app-button>
 						</md-card-actions>
 						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
 					</div>
@@ -206,6 +206,8 @@ export default class Order extends Vue {
 
 		z-index: 10000;
 
+		overflow: hidden;
+
 		.shoppingCart-toggle {
 			padding: 10px;
 		}
@@ -256,12 +258,14 @@ export default class Order extends Vue {
 			}
 			.shoppingCart-actions {
 				flex: 1;
+				.md-icon-button {
+				}
 				h3 {
 					padding: 0 10px;
 				}
 			}
 			.price {
-				flex: 1;
+				flex: 2;
 				text-align: right;
 			}
 			.checkout {
@@ -409,6 +413,19 @@ export default class Order extends Vue {
 
 		.total {
 			margin-top: 20px;
+		}
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.shoppingCart-container {
+		.shoppingCart-actions {
+			.md-icon-button {
+				display: none;
+			}
+		}
+		.price {
+			flex: 3 !important;
 		}
 	}
 }
