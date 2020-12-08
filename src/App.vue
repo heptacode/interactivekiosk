@@ -1,21 +1,26 @@
 <template>
 	<div id="app">
-		<div class="topbar">
-			<div class="actions">
-				<div class="admin" @dblclick="$router.replace('/admin')"></div>
-				<button v-if="isMac" class="close" @mousedown="closeApp"></button>
+		<header>
+			<div class="pwa">
+				<app-button v-if="1 /*deferredPrompt*/" class="md-icon-button" color="default" @click="showPWA">
+					<i class="iconify" data-icon="mdi:download"></i>
+				</app-button>
 			</div>
-			<div class="menu">
+			<div class="title">
 				<i data-icon="mdi-account-voice" class="iconify" />
 				Interactive Kiosk
 			</div>
-		</div>
-		<header class="path-list">
+			<div>
+				<div class="admin" @dblclick="$router.replace('/admin')"></div>
+				<button v-if="isMac" class="close" @mousedown="closeApp"></button>
+			</div>
+		</header>
+		<div class="path-list">
 			<router-link to="/" class="path">
 				<i class="iconify path" data-icon="mdi-home" @click="$router.replace('/')"></i>
 			</router-link>
 			<span class="path">{{ $route.name }}</span>
-		</header>
+		</div>
 		<div class="content">
 			<router-view />
 		</div>
@@ -39,12 +44,24 @@ export default class App extends Vue {
 		this.stopHelloLoop();
 	}
 
+	deferredPrompt: any = false;
+
 	async mounted() {
 		await this.bindStock();
+		window.addEventListener("beforeinstallprompt", (e: any) => {
+			e.preventDefault();
+			this.deferredPrompt = e;
+			console.log("installed");
+			e.prompt();
+		});
 	}
 
 	closeApp() {
 		window.close();
+	}
+
+	showPWA() {
+		this.deferredPrompt.prompt();
 	}
 
 	get isMac() {
@@ -93,60 +110,64 @@ html {
 	width: 100vw;
 	height: 100vh;
 	overflow: hidden;
-	.topbar {
-		position: relative;
 
+	header {
 		display: flex;
-		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+
+		background-color: #1c1b29;
+
+		font-size: 32px;
+		text-align: center;
+		color: white;
 
 		-webkit-user-select: none;
 		-webkit-app-region: drag;
 
-		color: white;
-		background-color: #1c1b29;
-
-		.actions {
-			position: absolute;
-			width: 100%;
-
-			top: 0;
-			display: flex;
-			justify-content: flex-end;
-
-			.admin {
-				width: 60px;
-				height: 60px;
-				cursor: move;
-			}
-
-			.close {
-				-webkit-app-region: no-drag;
-
-				cursor: pointer;
-				background-color: #aa3333;
-
-				border-radius: 5px 0 5px 5px;
-
-				width: 20px;
-				height: 20px;
-				z-index: 10000;
-			}
-
-			z-index: 1000;
-		}
-		.menu {
+		.pwa {
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			padding: 20px;
 
-			font-size: 32px;
+			width: 60px;
+			height: 60px;
+
+			.app-button {
+				font-size: 20px;
+
+				z-index: 10000;
+			}
+		}
+
+		.title {
 			font-weight: bold;
-			text-align: center;
 
 			.iconify {
 				margin-right: 10px;
 			}
+		}
+
+		.admin {
+			width: 60px;
+			height: 60px;
+
+			cursor: move;
+		}
+
+		.close {
+			-webkit-app-region: no-drag;
+
+			background-color: #aa3333;
+
+			border-radius: 5px 0 5px 5px;
+
+			width: 20px;
+			height: 20px;
+
+			cursor: pointer;
+
+			z-index: 10001;
 		}
 	}
 

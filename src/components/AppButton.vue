@@ -1,14 +1,22 @@
 <template>
-	<md-button class="md-raised md-primary app-button" v-bind="$props" v-on="$listeners">
+	<md-button class="md-raised app-button" :class="getColorClass" v-bind="$props" v-on="$listeners">
 		<slot></slot>
 	</md-button>
 </template>
 
-<script>
-import { Component, Vue } from "vue-property-decorator";
+<script lang="ts">
+import { Component, Prop, Vue } from "vue-property-decorator";
 
 @Component
-export default class AppButton extends Vue {}
+export default class AppButton extends Vue {
+	@Prop({ type: String }) color!: string;
+
+	get getColorClass() {
+		if (this.color === "accent") return "md-accent";
+		else if (this.color === "default") return;
+		return "md-primary";
+	}
+}
 </script>
 
 <style lang="scss" scoped>
