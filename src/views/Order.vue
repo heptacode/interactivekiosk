@@ -203,10 +203,9 @@ export default class Order extends Vue {
 		align-items: center;
 
 		width: 60%;
+		min-width: 400px;
 
 		z-index: 10000;
-
-		overflow: hidden;
 
 		.shoppingCart-toggle {
 			padding: 10px;
