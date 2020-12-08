@@ -35,7 +35,7 @@ messaging
 
 messaging.onMessage((payload) => {
 	console.log(payload);
-	alert(payload);
+	alert(`[${payload.notification.title}] ${payload.notification.body}`);
 });
 
 export const db = firebase.firestore();
