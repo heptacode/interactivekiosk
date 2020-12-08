@@ -293,7 +293,10 @@ export default class Admin extends Vue {
 
 			padding: 20px;
 
-			border-bottom: 1px solid rgba(#000, 0.15);
+			border-left: 5px solid rgba(#000, 0.4);
+			border-radius: 7px;
+
+			margin-bottom: 10px;
 			img {
 				display: block;
 
