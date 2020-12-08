@@ -23,6 +23,22 @@ Vue.use(MdTabs);
 Vue.use(MdRipple);
 Vue.use(MdCard);
 
+try {
+	if ("Notification" in window) {
+		if (Notification.permission == "granted") {
+			console.log("Notification granted");
+		} else if (Notification.permission == "denied") {
+			console.log("Notification denied");
+		} else {
+			Notification.requestPermission((status) => {
+				console.log("Notification.requestPermission status : " + status);
+			});
+		}
+	}
+} catch (err) {
+	console.log("No Notification");
+}
+
 new Vue({
 	router,
 	store,
