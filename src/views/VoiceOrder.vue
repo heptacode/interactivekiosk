@@ -99,20 +99,20 @@ export default class VoiceOrder extends Vue {
 		this.orderProcess();
 
 		setTimeout(() => {
-			this.shoppingCart.push(
-				{
-					name: "망고",
-					price: 4000,
-					quantity: 2,
-					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
-				},
-				{
-					name: "자몽",
-					price: 3000,
-					quantity: 5,
-					image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fgrapefruit.jpg?alt=media&token=8f451da3-be70-4100-b94b-7f8514197087",
-				}
-			);
+			// this.shoppingCart.push(
+			// 	{
+			// 		name: "망고",
+			// 		price: 4000,
+			// 		quantity: 2,
+			// 		image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
+			// 	},
+			// 	{
+			// 		name: "자몽",
+			// 		price: 3000,
+			// 		quantity: 5,
+			// 		image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fgrapefruit.jpg?alt=media&token=8f451da3-be70-4100-b94b-7f8514197087",
+			// 	}
+			// );
 		}, 500);
 	}
 
@@ -137,7 +137,9 @@ export default class VoiceOrder extends Vue {
 
 	deactivatePTT(event: KeyboardEvent) {
 		if (event.code !== "Space" || !this.isRecording || !this.isOrderProcess) return;
-		this.isRecording = this.isSpeakable = false;
+		setTimeout(() => {
+			this.isRecording = this.isSpeakable = false;
+		}, 1000);
 		this.playAudio({ isLocal: true, data: "voiceorder/ptt_deactivate" });
 	}
 
@@ -162,40 +164,49 @@ export default class VoiceOrder extends Vue {
 		if (text == "완료" || text == "종료") return this.checkout();
 
 		try {
-			let reg = new RegExp(
-				`(${this.stockList
-					.map((item) => item.alias)
-					.flat()
-					.join("|")}).*?(?:([1-9]+[0-9]*)|(열|스물|서른|마흔|쉰|예순|일흔|여든|아흔)(하나|둘|셋|다섯|여섯|일곱|여덟|아홉)?|(스무)|(한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉))`
-			);
+			let split = text.split(new RegExp("(,| )")).filter((data) => data.trim() && data.trim() != ",");
+			console.log(split);
+			for (let i = 0; i < split.length; i++) {
+				let word = split[i];
+				let nextWord = split[i + 1];
 
-			// FIXME: 여러개 상품 지원
+				let wordMatch = word?.match(
+					new RegExp(
+						`(${this.stockList
+							.map((item) => [item.name, item.alias])
+							.flat()
+							.join("|")})`
+					)
+				)?.input;
 
-			let match =
-				text
-					.trim()
-					.match(reg)
-					?.filter((i) => i) || [];
+				let stockItem: StockItem | undefined;
 
-			let menuAlias = String(match![1]);
+				if (wordMatch) {
+					// 인덱스 가져오기
+					stockItem = this.stockList.find((item) => item.alias!.indexOf(wordMatch!) != -1 || item.name == wordMatch);
+					if (!stockItem) throw "메뉴가 존재하지 않습니다.";
+				} else throw "메뉴가 존재하지 않습니다.";
 
-			// 인덱스 가져오기
-			let stockItem: StockItem | undefined = this.stockList.find((item) => item.alias!.indexOf(menuAlias) != -1);
-			if (!stockItem) throw "메뉴가 존재하지 않습니다.";
+				let nextWordMatch = nextWord?.match(
+					new RegExp(`([1-9]+[0-9]*)|(열|스물|서른|마흔|쉰|예순|일흔|여든|아흔)(하나|둘|셋|다섯|여섯|일곱|여덟|아홉)?|(스무)|(한|하나|두|둘|세|셋|네|넷|다섯|여섯|일곱|여덟|아홉)`)
+				)?.input;
 
-			// 갯수 가져오기
-			let quantity = 0;
-			let matchCount = String(match[2]);
-			if (matchCount in koreanNumber) quantity = koreanNumber[matchCount];
-			else quantity = 1;
+				let quantity = 1;
 
-			console.log(`인식 - ${menuAlias}, ${quantity}`);
+				if (nextWordMatch) {
+					i++;
+					// 갯수 가져오기
+					let matchCount = String(nextWordMatch.replace("개", ""));
+					if (!isNaN(Number(matchCount))) quantity = Number(matchCount);
+					else if (matchCount in koreanNumber) quantity = koreanNumber[matchCount];
+				}
 
-			let prevStockItem = this.shoppingCart.find((s) => s.name == stockItem?.name);
-			if (prevStockItem) {
-				if (stockItem!.quantity > prevStockItem.quantity) prevStockItem.quantity++;
-				else unavailableItems.push(stockItem);
-			} else this.shoppingCart.push({ ...stockItem!, quantity: 1 });
+				let prevStockItem = this.shoppingCart.find((s) => s.name == stockItem?.name);
+				if (prevStockItem) {
+					if (stockItem!.quantity > prevStockItem.quantity) prevStockItem.quantity++;
+					else unavailableItems.push(stockItem);
+				} else this.shoppingCart.push({ ...stockItem!, quantity: quantity });
+			}
 
 			let clearStr = `장바구니에 추가된 메뉴는 ${this.shoppingCart.map((item) => item.name).join(",") || "없"}${
 				unavailableItems.length ? `이며, 주문이 불가능한 메뉴는 ${unavailableItems.map((s) => s.name).join(",")}입니다.` : "입니다."
