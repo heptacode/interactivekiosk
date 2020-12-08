@@ -281,7 +281,6 @@ export default class Order extends Vue {
 
 	.product-container {
 		display: grid;
-		align-items: flex-start;
 		grid-template-columns: 1fr 1fr 1fr;
 
 		row-gap: 30px;
@@ -295,9 +294,6 @@ export default class Order extends Vue {
 
 		overflow-y: scroll;
 
-		.product {
-			height: fit-content;
-		}
 		.product:last-child {
 			margin-bottom: 30px;
 		}
