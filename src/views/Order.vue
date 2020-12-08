@@ -1,37 +1,37 @@
 <template>
 	<div :class="{ order: !isElectron, 'order-electron': isElectron }">
-		<div class="product-container">
-			<div v-for="(item, idx) in stockList" :key="idx" class="product" @click="addItem(item)">
-				<md-card md-with-hover>
-					<md-ripple>
-						<md-card-header v-if="!isElectron">
-							<!-- <md-card-media md-ratio="1:1"> -->
+		<div class="product-list">
+			<md-card
+				v-for="(item, idx) in stockList"
+				:key="idx"
+				md-with-hover
+				class="product"
+				@click.native="addItem(item)"
+			>
+				<md-ripple>
+					<md-card-header v-if="!isElectron">
+						<!-- <md-card-media md-ratio="1:1"> -->
+						<img :src="item.image" />
+						<!-- </md-card-media> -->
+						<md-card-header-text>
+							<div class="md-title">{{ item.name }}</div>
+							<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
+						</md-card-header-text>
+					</md-card-header>
+					<div v-else>
+						<md-card-media md-ratio="16:9">
 							<img :src="item.image" />
-							<!-- </md-card-media> -->
-							<md-card-header-text>
-								<div class="md-title">{{ item.name }}</div>
-								<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
-							</md-card-header-text>
+						</md-card-media>
+						<md-card-header>
+							<div class="md-title">{{ item.name }}</div>
+							<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
 						</md-card-header>
-						<div v-else>
-							<md-card-media md-ratio="16:9">
-								<img :src="item.image" />
-							</md-card-media>
-							<md-card-header>
-								<div class="md-title">{{ item.name }}</div>
-								<div class="md-subhead">{{ numberFormat(item.price) }}원</div>
-							</md-card-header>
-						</div>
-						<!-- <md-card-actions>
-							<md-button>-</md-button>
-							<md-button>+</md-button>
-						</md-card-actions> -->
-					</md-ripple>
-				</md-card>
-			</div>
+					</div>
+				</md-ripple>
+			</md-card>
 		</div>
 
-		<div class="shoppingCart-container">
+		<div class="cart-container">
 			<transition name="fade">
 				<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="shoppingCart-toggle" round @click="shoppingCartVisible = true">
 					<i class="iconify" data-icon="mdi:chevron-up"></i>
@@ -40,8 +40,8 @@
 			</transition>
 
 			<transition name="fade">
-				<md-card class="shoppingCart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
-					<div class="shoppingCart-heading">
+				<md-card class="cart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
+					<div class="cart-header">
 						<h1>장바구니</h1>
 						<app-button v-if="!isElectron" round @click="shoppingCartVisible = false">
 							<i class="iconify" data-icon="mdi:chevron-down"></i>
@@ -53,19 +53,32 @@
 						</app-button>
 					</div>
 
-					<div v-for="(item, idx) in shoppingCart" :key="idx" class="shoppingCart-item">
-						<img :src="item.image" alt="" />
-						<h2>{{ item.name }}</h2>
-
-						<md-card-actions class="shoppingCart-actions">
-							<app-button circle dense @click="decreaseItem(item)">-</app-button>
-							<h3>&times;{{ item.quantity }}</h3>
-							<app-button circle dense @click="increaseItem(item)">+</app-button>
-						</md-card-actions>
-						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
+					<div class="cart-list">
+						<div
+							v-for="(item, idx) in shoppingCart"
+							:key="idx"
+							class="cart-item"
+						>
+							<img :src="item.image" alt="" />
+							<div class="control">
+								<h2>{{ item.name }}</h2>
+								<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
+								<md-card-actions class="actions">
+									<app-button circle dense @click="decreaseItem(item)">-</app-button>
+									<h3>{{ item.quantity }}</h3>
+									<app-button circle dense @click="increaseItem(item)">+</app-button>
+								</md-card-actions>
+							</div>
+						</div>
 					</div>
 
-					<app-button class="checkout" round :disabled="!shoppingCart.length" @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"> {{ getTotalPrice }}원 결제하기 </app-button>
+					<app-button
+						:disabled="!shoppingCart.length"
+						class="checkout"
+						@click="(shoppingCartVisible = false), (isCheckoutVisible = true)"
+					>
+						{{ getTotalPrice }}원 결제하기
+					</app-button>
 				</md-card>
 			</transition>
 		</div>
@@ -86,6 +99,10 @@
 				</md-card>
 			</div>
 		</transition>
+
+		<router-link to="/" class="leave">
+			<i class="iconify" data-icon="mdi:arrow-left" />
+		</router-link>
 	</div>
 </template>
 
@@ -157,206 +174,122 @@ export default class Order extends Vue {
 	transform: translateY(100px);
 }
 
-.order {
+[class^="order"] {
+	display: flex;
+
+	width: 100%;
+	height: 100%;
+	max-height: 100vh;
+}
+
+.product-list {
+	display: grid;
+	align-content: flex-start;
+	grid-template-columns: repeat(auto-fill, minmax(256px, 1fr));
+	gap: 16px;
+
+	flex: 1 1 0;
+	padding: 16px;
+
+	overflow: hidden auto;
+
+	.product {
+		height: fit-content;
+	}
+}
+
+.cart-container {
+	flex: 0 0 320px;
+}
+.cart {
 	display: flex;
 	flex-direction: column;
 
 	height: 100%;
 
-	.product-container {
+	.cart-header {
 		display: flex;
-		flex-direction: column;
+		justify-content: space-between;
 		align-items: center;
 
-		overflow-y: scroll;
+		flex: 0 0 56px;
+		padding: 8px;
 
-		.product {
-			width: 100%;
-			.md-ripple {
-				height: 90px;
-				img {
-					width: 60px;
-					height: 60px;
-				}
-				.md-title {
-					margin: 0;
-				}
-				.md-card-header-text {
-					display: flex;
-					flex-direction: column;
-					justify-content: center;
-				}
-			}
+		h1 {
+			font-size: 24px;
+			font-weight: bold;
 		}
 	}
-	.shoppingCart-container {
-		position: fixed;
-		bottom: 0;
-		left: 0;
-		right: 0;
 
-		margin: 0 auto;
-		margin-bottom: 15px;
+	.cart-list {
+		flex: 1 1 100%;
+		height: 0;
 
-		display: flex;
-		justify-content: center;
-		align-items: center;
+		overflow: hidden auto;
 
-		width: 60%;
-		min-width: 400px;
-
-		z-index: 10000;
-
-		.shoppingCart-toggle {
-			padding: 10px;
-		}
-		.shoppingCart {
+		.cart-item {
 			display: flex;
-			flex-direction: column;
-			align-items: center;
+			height: 96px;
 
-			border-radius: 20px;
-
-			width: 100%;
-			max-width: 500px;
-
-			padding: 20px;
-
-			box-shadow: 0 3px 5px -1px rgba(#000, 0.5);
-
-			.shoppingCart-heading {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-
-				width: 100%;
-				margin-bottom: 10px;
+			&:nth-child(2) {
+				border-top: 1px solid #EEE;
+			}
+			&:not(:nth-last-child(2)) {
+				border-bottom: 1px solid #EEE;
 			}
 
-			.shoppingCart-item {
+			img {
+				flex: 0 0 96px;
+				width: 96px;
+				height: 100%;
+
+				object-fit: cover;
+			}
+			.control {
 				display: flex;
-				align-items: center;
+				flex-direction: column;
 
-				width: 100%;
-
-				padding: 10px 0;
-				border-bottom: 0.5px solid rgba(#000, 0.15);
+				flex: 1 1 0;
+				height: 100%;
+				padding: 8px;
 
 				h2 {
-					padding: 0 4px;
-				}
-				img {
-					width: 50px;
-					height: 50px;
-					border-radius: 50%;
-				}
-			}
+					width: 100%;
+					overflow: hidden;
 
-			h2 {
-				flex: 2;
-			}
-			.shoppingCart-actions {
-				flex: 1;
-				.md-icon-button {
+					font-size: 20px;
+					font-weight: bold;
+					white-space: nowrap;
+					text-overflow: ellipsis;
 				}
-				h3 {
-					padding: 0 10px;
+				.price {
+					margin-bottom: auto;
 				}
-			}
-			.price {
-				flex: 2;
-				text-align: right;
-			}
-			.checkout {
-				margin-top: 20px;
-				align-self: flex-end;
+
+				.actions {
+					display: flex;
+
+					padding: 0;
+
+					font-size: 18px;
+					font-weight: bold;
+
+					h3 {
+						width: 64px;
+						margin: 0 8px;
+						overflow: hidden;
+
+						text-align: center;
+						white-space: nowrap;
+						text-overflow: ellipsis;
+					}
+				}
 			}
 		}
 	}
-}
-
-.order-electron {
-	display: flex;
-	height: 100%;
-
-	.product-container {
-		display: grid;
-		grid-template-columns: 1fr 1fr 1fr;
-
-		row-gap: 30px;
-		column-gap: 30px;
-
-		width: 70%;
-
-		padding: 40px;
-
-		box-shadow: 1px 0 40px rgba(#000, 0.1);
-
-		overflow-y: scroll;
-
-		.product:last-child {
-			margin-bottom: 30px;
-		}
-	}
-
-	.shoppingCart-container {
-		display: flex;
-		flex-direction: column;
-
-		position: relative;
-
-		width: 30%;
-		height: 100%;
-
-		padding: 30px;
-
-		.shoppingCart {
-			box-shadow: none;
-			background-color: transparent;
-			margin-top: 20px;
-
-			height: 100%;
-
-			.shoppingCart-heading {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-
-				margin-bottom: 40px;
-				h1 {
-					font-size: 2.5em;
-				}
-			}
-
-			.shoppingCart-item {
-				display: flex;
-				justify-content: space-between;
-				align-items: center;
-
-				padding: 20px 0;
-				border-bottom: 0.5px solid rgba(#000, 0.15);
-
-				img {
-					width: 50px;
-					height: 50px;
-
-					border-radius: 50%;
-				}
-
-				h3 {
-					padding: 0 10px;
-				}
-			}
-
-			.checkout {
-				position: absolute;
-				top: auto;
-				bottom: 10px;
-
-				width: 100%;
-				height: 50px;
-			}
-		}
+	.checkout {
+		flex: 0 0 64px;
+		width: 100%;
 	}
 }
 
@@ -416,16 +349,35 @@ export default class Order extends Vue {
 	}
 }
 
-@media screen and (max-width: 600px) {
-	.shoppingCart-container {
-		.shoppingCart-actions {
-			.md-icon-button {
-				// display: none;
-			}
-		}
-		.price {
-			flex: 3 !important;
-		}
+.leave {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	position: fixed;
+	z-index: 2048;
+	bottom: 12px;
+	left: 12px;
+
+	width: 48px;
+	height: 48px;
+
+	border-radius: 24px;
+
+	background-color: #ff5252;
+
+	color: white !important;
+	font-size: 32px;
+	text-align: center;
+}
+
+@media screen and (max-width: 900px) {
+	[class^="order"] {
+		flex-direction: column;
+	}
+	.cart-container {
+		width: 100%;
+		height: 320px;
 	}
 }
 </style>

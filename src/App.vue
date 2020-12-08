@@ -1,26 +1,17 @@
 <template>
 	<div id="app">
-		<header>
-			<div class="pwa">
-				<app-button v-if="deferredPrompt" circle color="default" @click="showPWA">
-					<i class="iconify" data-icon="mdi:download"></i>
-				</app-button>
-			</div>
-			<div class="title">
-				<i data-icon="mdi-account-voice" class="iconify" />
-				Interactive Kiosk
-			</div>
-			<div class="admin" @dblclick="$router.replace('/admin')"></div>
-		</header>
-		<div class="path-list">
-			<router-link to="/" class="path">
-				<i class="iconify path" data-icon="mdi-home" @click="$router.replace('/')"></i>
+		<header v-if="isAdmin">
+			<router-link to="/" class="btn-home">
+				<i class="iconify" data-icon="mdi:home" />
 			</router-link>
-			<span class="path">{{ $route.name }}</span>
-		</div>
-		<div class="content">
+			<button class="btn-close" @click="closeWindow">
+				<i class="iconify" data-icon="mdi:close" />
+			</button>
+		</header>
+		<div id="content">
 			<router-view />
 		</div>
+		<button id="admin" @dblclick="() => this.$router.push('/admin')" />
 	</div>
 </template>
 
@@ -56,138 +47,97 @@ export default class App extends Vue {
 	showPWA() {
 		this.deferredPrompt.prompt();
 	}
+	closeWindow() {
+		window.close();
+	}
 
 	get isMac() {
 		return process.platform === "darwin";
+	}
+	get isAdmin() {
+		return this.$route.name === "관리자";
 	}
 }
 </script>
 
 <style lang="scss">
-* {
+// Reset default style
+*,
+::before,
+::after {
 	margin: 0;
 	padding: 0;
 
-	box-sizing: border-box;
-}
-
-button {
 	border: none;
-}
-::-webkit-scrollbar {
-	width: 5px;
-	height: 5px;
-}
-::-webkit-scrollbar-thumb:window-inactive,
-::-webkit-scrollbar-thumb {
-	width: 5px;
-	height: 5px;
-	background-color: #cccccc;
-}
-::-webkit-scrollbar-track {
-	width: 5px;
-	height: 5px;
-	background-color: #dddddd;
+	background: none;
+
+	box-sizing: border-box;
+
+	color: inherit;
+	font: inherit;
+	text-decoration: inherit;
 }
 
+// Reset root style
 html {
+	height: 100%;
+
+	overflow: hidden auto;
+
 	-webkit-user-select: none;
 	user-select: none;
 	word-break: keep-all;
-
-	background-color: #eeeeee;
 }
+body {
+	height: 100%;
+}
+
+// Layout style
 #app {
 	display: flex;
 	flex-direction: column;
-	width: 100vw;
-	height: 100vh;
-	overflow: hidden;
+
+	height: 100%;
 
 	header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 
-		background-color: #1c1b29;
+		position: sticky;
+		z-index: 1024;
+		top: 0;
 
-		font-size: 32px;
-		text-align: center;
-		color: white;
+		flex: 0 0 32px;
+		padding: 4px;
 
-		-webkit-user-select: none;
+		background-color: #111;
+
+		font-size: 24px;
+
 		-webkit-app-region: drag;
 
-		.pwa {
+		[class^="btn"] {
 			display: flex;
-			justify-content: center;
-			align-items: center;
-
-			width: 60px;
-			height: 60px;
-
-			.app-button {
-				font-size: 20px;
-
-				z-index: 10000;
-			}
-		}
-
-		.title {
-			font-weight: bold;
-
-			.iconify {
-				margin-right: 10px;
-			}
-		}
-
-		.admin {
-			width: 60px;
-			height: 60px;
-
-			cursor: move;
-		}
-	}
-
-	.content {
-		flex: 1;
-
-		overflow-y: hidden;
-	}
-
-	.path-list {
-		display: flex;
-		align-items: center;
-
-		padding: 4px 24px;
-
-		background-color: rgba(#1c1b29, 0.8) !important;
-
-		color: rgba(#fff, 0.65);
-		font-size: 16px;
-
-		.iconify {
-		}
-
-		.path {
-			display: flex;
-			align-items: center;
-			color: rgba(#fff, 0.65);
+			color: white;
 
 			cursor: pointer;
 
-			&:not(:first-child)::before {
-				content: "＞";
-
-				margin: 0 8px;
-
-				font-size: 12px;
-			}
-
-			&:hover {
-				color: #fff;
-			}
+			-webkit-app-region: no-drag;
 		}
 	}
+}
+#content {
+	flex: 1 1 0;
+}
+
+// Control buttons
+#admin {
+	position: absolute;
+	top: 0;
+	right: 0;
+
+	width: 32px;
+	height: 32px;
 }
 </style>

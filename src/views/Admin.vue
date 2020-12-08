@@ -5,10 +5,6 @@
 				<i class="iconify" data-icon="mdi:bell"></i>
 				푸시 알림 테스트
 			</app-button>
-			<app-button round color="accent" @click="closeApp">
-				<i class="iconify" data-icon="mdi:power"></i>
-				종료
-			</app-button>
 		</div>
 
 		<h1 class="title">재고 관리</h1>
@@ -163,10 +159,6 @@ export default class Admin extends Vue {
 
 	testNotification() {}
 
-	closeApp() {
-		window.close();
-	}
-
 	get getTotalQuantity() {
 		return this.stockList.reduce((prev, next) => prev + Number(next.quantity), 0);
 	}
@@ -283,7 +275,6 @@ export default class Admin extends Vue {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		overflow-y: scroll;
 
 		.product {
 			display: flex;
@@ -319,18 +310,15 @@ export default class Admin extends Vue {
 	}
 
 	.createItem {
-		position: absolute;
-		top: auto;
-		right: 12px;
+		position: fixed;
+		right: 10px;
 		bottom: 10px;
-		left: auto;
 
 		font-size: 2em;
 	}
 
 	.itemCreator-container {
 		position: fixed;
-		top: auto;
 		bottom: 0;
 
 		display: flex;
