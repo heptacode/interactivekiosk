@@ -1,5 +1,20 @@
 <template>
 	<div class="admin">
+		<div class="actions">
+			<app-button round color="default" @click="testNotification">
+				<i class="iconify" data-icon="mdi:bell"></i>
+				푸시 알림 테스트
+			</app-button>
+			<app-button round color="accent" @click="closeApp">
+				<i class="iconify" data-icon="mdi:power"></i>
+				종료
+			</app-button>
+		</div>
+
+		<h1 class="title">재고 관리</h1>
+
+		<div class="product-info">품목 : {{ stockList.length }}개 / 총 수량 : {{ getTotalQuantity }}개</div>
+
 		<div class="product-container">
 			<transition-group name="slide">
 				<div v-for="(item, idx) in stockList" :key="item.id">
@@ -35,11 +50,11 @@
 							</div>
 
 							<md-card-actions>
-								<app-button class="round" @click="duplicateItem({ id: item.id, itemData: item })">
+								<app-button round @click="duplicateItem({ id: item.id, itemData: item })">
 									<i class="iconify" data-icon="mdi:content-copy"></i>
 									복제
 								</app-button>
-								<app-button class="round md-accent" @click="deleteItem(item.id)">
+								<app-button round color="accent" @click="deleteItem(item.id)">
 									<i class="iconify" data-icon="mdi:trash"></i>
 									삭제
 								</app-button>
@@ -52,7 +67,7 @@
 		</div>
 
 		<transition v-if="!isItemCreatorVisible" name="fade">
-			<app-button class="md-fab createItem" @click="isItemCreatorVisible = true">
+			<app-button class="createItem" fab @click="isItemCreatorVisible = true">
 				<i class="iconify" data-icon="mdi:plus"></i>
 			</app-button>
 		</transition>
@@ -63,7 +78,7 @@
 					<form action="javascript:void(0)" @submit="submitItemCreator">
 						<div class="itemCreator-heading">
 							<h1>제품 추가</h1>
-							<app-button class="md-icon-button md-accent md-dense" @click="resetItemCreator">
+							<app-button circle dense color="accent" @click="resetItemCreator">
 								<i class="iconify" data-icon="mdi:close"></i>
 							</app-button>
 						</div>
@@ -102,7 +117,8 @@
 						<md-card-actions>
 							<app-button
 								type="submit"
-								class="round submit"
+								class="submit"
+								round
 								:disabled="!itemCreatorData.name || !itemCreatorData.alias || !itemCreatorData.price || !itemCreatorData.quantity || isItemCreating"
 							>
 								{{ !isItemCreating ? "완료" : "기다리십시오 ..." }}
@@ -143,6 +159,16 @@ export default class Admin extends Vue {
 
 	mounted() {
 		this.resetItemCreator();
+	}
+
+	testNotification() {}
+
+	closeApp() {
+		window.close();
+	}
+
+	get getTotalQuantity() {
+		return this.stockList.reduce((prev, next) => prev + Number(next.quantity), 0);
 	}
 
 	resetItemCreator() {
@@ -231,12 +257,26 @@ export default class Admin extends Vue {
 
 	height: 100%;
 
-	.hgroup {
+	.actions {
 		display: flex;
+		justify-content: center;
+		align-items: center;
 
-		.md-field {
-			margin-left: 20px;
+		margin: 30px 0;
+
+		.app-button {
+			margin: 0 10px;
 		}
+	}
+
+	.title {
+		margin: 10px 0 10px 0;
+		text-align: center;
+	}
+
+	.product-info {
+		margin-bottom: 20px;
+		text-align: center;
 	}
 
 	.product-container {

@@ -33,7 +33,7 @@
 
 		<div class="shoppingCart-container">
 			<transition name="fade">
-				<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="round shoppingCart-toggle" @click="shoppingCartVisible = true">
+				<app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="shoppingCart-toggle" round @click="shoppingCartVisible = true">
 					<i class="iconify" data-icon="mdi:chevron-up"></i>
 					장바구니 열기
 				</app-button>
@@ -43,11 +43,11 @@
 				<md-card class="shoppingCart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
 					<div class="shoppingCart-heading">
 						<h1>장바구니</h1>
-						<app-button v-if="!isElectron" class="round" @click="shoppingCartVisible = false">
+						<app-button v-if="!isElectron" round @click="shoppingCartVisible = false">
 							<i class="iconify" data-icon="mdi:chevron-down"></i>
 							숨기기
 						</app-button>
-						<app-button v-else class="round md-accent" :disabled="!shoppingCart.length" @click="shoppingCart.splice(0, shoppingCart.length)">
+						<app-button v-else round color="accent" :disabled="!shoppingCart.length" @click="shoppingCart.splice(0, shoppingCart.length)">
 							<i class="iconify" data-icon="mdi:trash"></i>
 							비우기
 						</app-button>
@@ -58,14 +58,14 @@
 						<h2>{{ item.name }}</h2>
 
 						<md-card-actions class="shoppingCart-actions">
-							<app-button class="md-icon-button md-dense" @click="decreaseItem(item)">-</app-button>
+							<app-button circle dense @click="decreaseItem(item)">-</app-button>
 							<h3>&times;{{ item.quantity }}</h3>
-							<app-button class="md-icon-button md-dense" @click="increaseItem(item)">+</app-button>
+							<app-button circle dense @click="increaseItem(item)">+</app-button>
 						</md-card-actions>
 						<h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
 					</div>
 
-					<app-button class="round checkout" :disabled="!shoppingCart.length" @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"> {{ getTotalPrice }}원 결제하기 </app-button>
+					<app-button class="checkout" round :disabled="!shoppingCart.length" @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"> {{ getTotalPrice }}원 결제하기 </app-button>
 				</md-card>
 			</transition>
 		</div>
@@ -75,7 +75,7 @@
 				<md-card class="checkout">
 					<div class="checkout-heading">
 						<h1>결제하기</h1>
-						<app-button class="round md-accent" @click="(isCheckoutVisible = false), (shoppingCartVisible = true)">
+						<app-button round color="accent" @click="(isCheckoutVisible = false), (shoppingCartVisible = true)">
 							<i class="iconify" data-icon="mdi:close"></i>
 							취소하기
 						</app-button>
@@ -420,7 +420,7 @@ export default class Order extends Vue {
 	.shoppingCart-container {
 		.shoppingCart-actions {
 			.md-icon-button {
-				display: none;
+				// display: none;
 			}
 		}
 		.price {
