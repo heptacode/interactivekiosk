@@ -9,7 +9,7 @@ import CryptoJS from "crypto-js";
 import axios from "axios";
 
 import AudioModule, { IAudioModule } from "./modules/AudioModule";
-import FirestoreModule, { IFirestoreModule } from "./modules/FirestoreModule";
+import FirebaseModule, { IFirebaseModule } from "./modules/FirebaseModule";
 
 const script = require("@/lib/script.json");
 
@@ -100,7 +100,7 @@ const store: StoreOptions<RootState> = {
 	},
 	modules: {
 		AudioModule,
-		FirestoreModule,
+		FirebaseModule,
 	},
 };
 

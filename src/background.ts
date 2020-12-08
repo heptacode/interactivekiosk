@@ -1,9 +1,42 @@
 "use strict";
 
-import { app, protocol, BrowserWindow, systemPreferences } from "electron";
+import { app, protocol, BrowserWindow, ipcMain, systemPreferences } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS_DEVTOOLS } from "electron-devtools-installer";
 const isDevelopment = process.env.NODE_ENV !== "production";
+
+// import admin from "firebase-admin";
+// admin.initializeApp({
+// 	credential: admin.credential.applicationDefault(),
+// 	databaseURL: "https://interactive-kiosk.firebaseio.com",
+// });
+
+// let registrationToken = "fhNoUaCkM-570IRXrFjo8L:APA91bEflXMItJKJGQOY6a1xEUJM8dvtgxxzoxDPWxAHGK0lmQptIH0DjEhsBs4ydvd4YOHZdYKRg55StzCXZce2V6RtHuKgvuEQqSEPmzUscXEHx9H98I2v6JaveBtR3u6zDY7snjiw";
+
+// var message = {
+// 	data: {
+// 		score: "850",
+// 		time: "2:45",
+// 	},
+// 	token: registrationToken,
+// };
+
+// ipcMain.on("asynchronous-message", (event, arg) => {
+// 	console.log("asdfa");
+// 	console.log(arg); // "ping" 출력
+// 	event.reply("asynchronous-reply", "pong");
+
+// 	admin
+// 		.messaging()
+// 		.send(message)
+// 		.then((response) => {
+// 			// Response is a message ID string.
+// 			console.log("Successfully sent message:", response);
+// 		})
+// 		.catch((error) => {
+// 			console.log("Error sending message:", error);
+// 		});
+// });
 
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([{ scheme: "app", privileges: { secure: true, standard: true } }]);

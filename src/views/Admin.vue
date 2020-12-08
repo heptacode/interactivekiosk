@@ -3,7 +3,7 @@
 		<div class="actions">
 			<app-button round color="default" @click="testNotification">
 				<i class="iconify" data-icon="mdi:bell"></i>
-				푸시 알림 테스트
+				알림 테스트
 			</app-button>
 			<app-button round color="accent" @click="closeApp">
 				<i class="iconify" data-icon="mdi:power"></i>
@@ -145,12 +145,12 @@ import { Item } from "electron";
 export default class Admin extends Vue {
 	@State("isElectron") isElectron!: boolean;
 	@State("stockList") stockList!: StockItem[];
-	@State("imageUploadProgress", { namespace: "FirestoreModule" }) imageUploadProgress!: number;
+	@State("imageUploadProgress", { namespace: "FirebaseModule" }) imageUploadProgress!: number;
 
-	@Action("CREATE_ITEM", { namespace: "FirestoreModule" }) createItem!: Function;
-	@Action("UPDATE_ITEM", { namespace: "FirestoreModule" }) updateItem!: Function;
-	@Action("DUPLICATE_ITEM", { namespace: "FirestoreModule" }) duplicateItem!: Function;
-	@Action("DELETE_ITEM", { namespace: "FirestoreModule" }) deleteItem!: Function;
+	@Action("CREATE_ITEM", { namespace: "FirebaseModule" }) createItem!: Function;
+	@Action("UPDATE_ITEM", { namespace: "FirebaseModule" }) updateItem!: Function;
+	@Action("DUPLICATE_ITEM", { namespace: "FirebaseModule" }) duplicateItem!: Function;
+	@Action("DELETE_ITEM", { namespace: "FirebaseModule" }) deleteItem!: Function;
 
 	isItemCreatorVisible: boolean = false;
 	itemCreatorData: ItemCreatorData = {} as ItemCreatorData;
@@ -161,7 +161,9 @@ export default class Admin extends Vue {
 		this.resetItemCreator();
 	}
 
-	testNotification() {}
+	testNotification() {
+		alert("안녕하세요. 이것은 알림입니다.");
+	}
 
 	closeApp() {
 		window.close();

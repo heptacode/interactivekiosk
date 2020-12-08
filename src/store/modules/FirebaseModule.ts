@@ -7,11 +7,13 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import { StockItem, ItemCreatorData, ImageItem } from "@/schema";
 
-export interface IFirestoreModule {
+// import { ipcRenderer } from "electron";
+
+export interface IFirebaseModule {
 	imageUploadProgress: number;
 }
 
-const FirestoreModule: Module<IFirestoreModule, RootState> = {
+const FirebaseModule: Module<IFirebaseModule, RootState> = {
 	namespaced: true,
 	state: {
 		imageUploadProgress: 0,
@@ -28,6 +30,10 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 				console.error(`LOG: Unexpected Error While Logging`);
 			}
 		},
+		// async SEND_NOTIFICATION({}, message): Promise<boolean> {
+		// 	console.log(ipcRenderer.sendSync("synchronous-message", "ping"));
+		// 	return true;
+		// },
 		async UPLOAD_IMAGE({ state, dispatch }, imageItem: ImageItem): Promise<string> {
 			let uploadTask = storageRef.child(`products/${imageItem.name}`).putString(imageItem.data, "base64");
 			return new Promise<string>((resolve, reject) => {
@@ -138,4 +144,4 @@ const FirestoreModule: Module<IFirestoreModule, RootState> = {
 	},
 };
 
-export default FirestoreModule;
+export default FirebaseModule;

@@ -7,15 +7,15 @@
 				<span class="version">Release 1.1.0</span>
 				<span class="subtitle">구현 기능</span>
 				<ul>
-					<li>주문 안내 음성 및 음성 주문 기능</li>
-					<li>UI/UX 개선</li>
-					<li>터치 조작 개선</li>
+					<li>주문하기</li>
+					<li>음성으로 주문하기</li>
+					<li>관리자 페이지 - 재고 관리</li>
 				</ul>
 			</div>
 		</div>
 		<div class="actions">
 			<app-button v-if="isElectron && !earphoneDetection" @click="activateEarphoneDetection(), startHelloLoop()">이어폰 감지 활성화</app-button>
-			<app-button @click="requestAssistant">도움 요청</app-button>
+			<app-button v-if="isElectron" @click="requestAssistant">도움 요청</app-button>
 			<app-button @click="$router.replace('order')">시작하기</app-button>
 		</div>
 		<div class="voiceorder" @click="$router.replace('/voiceorder')"></div>
@@ -36,6 +36,8 @@ export default class Home extends Vue {
 	@Action("startHelloLoop") startHelloLoop!: Function;
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 
+	@Action("SEND_NOTIFICATION", { namespace: "FirebaseModule" }) sendNotification!: Function;
+
 	@Watch("earphoneDetection")
 	changeEarphoneDetection() {
 		if (!this.earphoneDetection) return;
@@ -55,7 +57,10 @@ export default class Home extends Vue {
 		if (this.earphoneDetection) this.startHelloLoop();
 	}
 
-	requestAssistant() {}
+	requestAssistant() {
+		alert("관리자에게 도움을 요청했습니다.");
+		// this.sendNotification();
+	}
 }
 </script>
 
