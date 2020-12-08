@@ -39,7 +39,7 @@
 				<md-card class="checkout">
 					<div class="checkout-heading">
 						<h1>결제하기</h1>
-						<app-button class="round md-accent" @click="isCheckoutVisible = false">
+						<app-button round color="accent" @click="isCheckoutVisible = false">
 							<i class="iconify" data-icon="mdi:close"></i>
 							취소하기
 						</app-button>

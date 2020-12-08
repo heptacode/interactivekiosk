@@ -2,7 +2,7 @@
 	<div id="app">
 		<header>
 			<div class="pwa">
-				<app-button v-if="1 /*deferredPrompt*/" class="md-icon-button" color="default" @click="showPWA">
+				<app-button v-if="1 /*deferredPrompt*/" circle color="default" @click="showPWA">
 					<i class="iconify" data-icon="mdi:download"></i>
 				</app-button>
 			</div>
@@ -10,10 +10,7 @@
 				<i data-icon="mdi-account-voice" class="iconify" />
 				Interactive Kiosk
 			</div>
-			<div>
-				<div class="admin" @dblclick="$router.replace('/admin')"></div>
-				<button v-if="isMac" class="close" @mousedown="closeApp"></button>
-			</div>
+			<div class="admin" @dblclick="$router.replace('/admin')"></div>
 		</header>
 		<div class="path-list">
 			<router-link to="/" class="path">
@@ -54,10 +51,6 @@ export default class App extends Vue {
 			console.log("installed");
 			e.prompt();
 		});
-	}
-
-	closeApp() {
-		window.close();
 	}
 
 	showPWA() {
@@ -153,21 +146,6 @@ html {
 			height: 60px;
 
 			cursor: move;
-		}
-
-		.close {
-			-webkit-app-region: no-drag;
-
-			background-color: #aa3333;
-
-			border-radius: 5px 0 5px 5px;
-
-			width: 20px;
-			height: 20px;
-
-			cursor: pointer;
-
-			z-index: 10001;
 		}
 	}
 

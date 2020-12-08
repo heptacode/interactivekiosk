@@ -1,5 +1,5 @@
 <template>
-	<md-button class="md-raised app-button" :class="getColorClass" v-bind="$props" v-on="$listeners">
+	<md-button class="md-raised app-button" :class="getClass" v-bind="$props" v-on="$listeners">
 		<slot></slot>
 	</md-button>
 </template>
@@ -10,11 +10,23 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 @Component
 export default class AppButton extends Vue {
 	@Prop({ type: String }) color!: string;
+	@Prop({ type: Boolean }) round!: boolean;
+	@Prop({ type: Boolean }) circle!: boolean;
+	@Prop({ type: Boolean }) fab!: boolean;
+	@Prop({ type: Boolean }) dense!: boolean;
 
-	get getColorClass() {
-		if (this.color === "accent") return "md-accent";
-		else if (this.color === "default") return;
-		return "md-primary";
+	get getClass() {
+		let classList: string[] = [];
+		if (this.color === "accent") classList.push("md-accent");
+		else if (this.color !== "default") classList.push("md-primary");
+
+		if (this.round) classList.push("round");
+		else if (this.circle) classList.push("md-icon-button");
+		else if (this.fab) classList.push("md-fab");
+
+		if (this.dense) classList.push("md-dense");
+
+		return classList.join(" ");
 	}
 }
 </script>
