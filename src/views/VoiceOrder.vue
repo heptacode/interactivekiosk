@@ -254,6 +254,8 @@ export default class VoiceOrder extends Vue {
 </script>
 
 <style lang="scss" scoped>
+@import "../variables";
+
 @keyframes indicator {
 	0% {
 		box-shadow: 2px 2px 10px rgba(#000, 0.4);
