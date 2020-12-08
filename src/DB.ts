@@ -3,6 +3,11 @@ import "firebase/firestore";
 import "firebase/storage";
 import "dotenv/config";
 
+const messaging = firebase.messaging();
+messaging.onMessage((payload) => {
+	alert(payload);
+});
+
 export const db = firebase
 	.initializeApp({
 		apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
