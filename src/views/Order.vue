@@ -230,12 +230,10 @@ export default class Order extends Vue {
 		.cart-item {
 			display: flex;
 			height: 96px;
+			border-bottom: 1px solid #EEE;
 
-			&:nth-child(2) {
+			&:first-child {
 				border-top: 1px solid #EEE;
-			}
-			&:not(:nth-last-child(2)) {
-				border-bottom: 1px solid #EEE;
 			}
 
 			img {

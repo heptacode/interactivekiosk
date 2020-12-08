@@ -11,7 +11,13 @@
 		<div id="content">
 			<router-view />
 		</div>
-		<button id="admin" @dblclick="() => this.$router.push('/admin')" />
+		<button
+			id="admin"
+			draggable
+			ref="adminButton"
+			@dragstart="goAdmin"
+			@touchmove="goAdmin"
+		/>
 	</div>
 </template>
 
@@ -49,6 +55,9 @@ export default class App extends Vue {
 	}
 	closeWindow() {
 		window.close();
+	}
+	goAdmin() {
+		this.$router.push("/admin");
 	}
 
 	get isMac() {

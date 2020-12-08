@@ -61,7 +61,7 @@
 			</div>
 		</transition>
 
-		<STT v-model="isRecording" @record="parseText"></STT>
+		<STT v-model="isRecording" :callback="parseText" />
 	</div>
 </template>
 
