@@ -420,7 +420,7 @@ export default class Order extends Vue {
 	.shoppingCart-container {
 		.shoppingCart-actions {
 			.md-icon-button {
-				display: none;
+				// display: none;
 			}
 		}
 		.price {

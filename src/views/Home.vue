@@ -15,7 +15,7 @@
 		</div>
 		<div class="actions">
 			<app-button v-if="isElectron && !earphoneDetection" class="app-button" @click="activateEarphoneDetection(), startHelloLoop()">이어폰 감지 활성화</app-button>
-			<app-button class="app-button">도움 요청</app-button>
+			<app-button class="app-button" @click="requestAssistant">도움 요청</app-button>
 			<app-button class="app-button" @click="$router.replace('order')">시작하기</app-button>
 		</div>
 		<div class="voiceorder" @click="$router.replace('/voiceorder')"></div>
@@ -53,6 +53,10 @@ export default class Home extends Vue {
 		});
 
 		if (this.earphoneDetection) this.startHelloLoop();
+	}
+
+	requestAssistant() {
+		alert("adfs");
 	}
 }
 </script>
