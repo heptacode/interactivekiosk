@@ -14,13 +14,13 @@ module.exports = {
 			swSrc: "public/service-worker.js",
 		},
 	},
-	// css: {
-	// 	loaderOptions: {
-	// 		scss: {
-	// 			prependData: `@import "@/variables.scss";`,
-	// 		},
-	// 	},
-	// },
+	css: {
+		loaderOptions: {
+			scss: {
+				prependData: `@import "@/variables.scss";`,
+			},
+		},
+	},
 	pluginOptions: {
 		electronBuilder: {
 			chainWebpackRendererProcess(config) {
