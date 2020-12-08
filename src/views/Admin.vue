@@ -163,7 +163,8 @@ export default class Admin extends Vue {
 	}
 
 	testNotification() {
-		prompt(this.fcmToken);
+		if (this.fcmToken) prompt("", this.fcmToken);
+		else alert("이 기기에서는 알림을 수신할 수 없습니다.");
 	}
 
 	closeApp() {
