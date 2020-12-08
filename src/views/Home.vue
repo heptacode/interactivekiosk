@@ -55,9 +55,7 @@ export default class Home extends Vue {
 		if (this.earphoneDetection) this.startHelloLoop();
 	}
 
-	requestAssistant() {
-		alert("adfs");
-	}
+	requestAssistant() {}
 }
 </script>
 

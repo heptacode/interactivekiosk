@@ -1,8 +1,18 @@
 <template>
 	<div class="voiceorder">
-		<div class="script">
-			<i class="iconify" data-icon="mdi:volume-high"></i>
-			{{ script }}
+		<div class="dialog">
+			<div class="speech">
+				<app-button circle color="default">
+					<i class="iconify" data-icon="mdi:volume-high"></i>
+				</app-button>
+				{{ script }}
+			</div>
+			<div v-if="userText" class="userText">
+				<app-button circle color="default">
+					<i class="iconify" data-icon="mdi:microphone"></i>
+				</app-button>
+				{{ userText }}
+			</div>
 		</div>
 
 		<div class="indicator" :class="{ speakable: isSpeakable, recording: isRecording }">
@@ -10,7 +20,7 @@
 				<span> <i class="iconify" data-icon="mdi:microphone"></i></span>
 			</span>
 			<span v-else>
-				<span> <i class="iconify" data-icon="mdi:headset"></i></span>
+				<span> <i class="iconify" data-icon="mdi:microphone-off"></i></span>
 			</span>
 		</div>
 
@@ -75,6 +85,7 @@ const koreanNumber = require("@/lib/koreanNumber.json");
 export default class VoiceOrder extends Vue {
 	@State("stockList") stockList!: StockItem[];
 	@State("script") script!: string;
+	@State("userText") userText!: string;
 
 	@Action("playAudio", { namespace: "AudioModule" }) playAudio!: Function;
 	@Action("playItems") playItems!: Function;
@@ -94,26 +105,26 @@ export default class VoiceOrder extends Vue {
 
 		this.$store.state.script = script.earphone_connected;
 		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		await this.playItems();
+		// await this.playItems();
 		this.isOrderProcess = true;
 		this.orderProcess();
 
-		setTimeout(() => {
-			// this.shoppingCart.push(
-			// 	{
-			// 		name: "망고",
-			// 		price: 4000,
-			// 		quantity: 2,
-			// 		image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
-			// 	},
-			// 	{
-			// 		name: "자몽",
-			// 		price: 3000,
-			// 		quantity: 5,
-			// 		image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fgrapefruit.jpg?alt=media&token=8f451da3-be70-4100-b94b-7f8514197087",
-			// 	}
-			// );
-		}, 500);
+		// setTimeout(() => {
+		// 	this.shoppingCart.push(
+		// 		{
+		// 			name: "망고",
+		// 			price: 4000,
+		// 			quantity: 2,
+		// 			image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fmango.jpg?alt=media&token=657b4a4a-0be6-4a45-8104-8659daf86edc",
+		// 		},
+		// 		{
+		// 			name: "자몽",
+		// 			price: 3000,
+		// 			quantity: 5,
+		// 			image: "https://firebasestorage.googleapis.com/v0/b/interactive-kiosk.appspot.com/o/products%2Fgrapefruit.jpg?alt=media&token=8f451da3-be70-4100-b94b-7f8514197087",
+		// 		}
+		// 	);
+		// }, 500);
 	}
 
 	numberFormat(number: number) {
@@ -208,9 +219,16 @@ export default class VoiceOrder extends Vue {
 				} else this.shoppingCart.push({ ...stockItem!, quantity: quantity });
 			}
 
-			let clearStr = `장바구니에 추가된 메뉴는 ${this.shoppingCart.map((item) => item.name).join(",") || "없"}${
-				unavailableItems.length ? `이며, 주문이 불가능한 메뉴는 ${unavailableItems.map((s) => s.name).join(",")}입니다.` : "입니다."
-			}`;
+			let clearStr = "장바구니에 담긴 제품";
+			if (!this.shoppingCart.length) {
+				clearStr += "이 없";
+				if (unavailableItems.length) clearStr += `으며, 주문 불가능한 제품은 ${unavailableItems.map((s) => s.name).join(",")}입니다.`;
+				else clearStr += "습니다.";
+			} else {
+				clearStr += `은 ${this.shoppingCart.map((item) => item.name).join(",")}`;
+				if (unavailableItems.length) clearStr += `이며, 주문 불가능한 제품은 ${unavailableItems.map((s) => s.name).join(",")}입니다.`;
+				else clearStr += "입니다.";
+			}
 
 			this.$store.state.script = clearStr;
 			await this.TTS(clearStr);
@@ -271,27 +289,37 @@ export default class VoiceOrder extends Vue {
 
 	overflow: hidden;
 
-	.script {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-
+	.dialog {
 		position: absolute;
-		top: 140px;
-		right: auto;
-		left: auto;
+		top: 120px;
 
 		padding: 20px;
 
 		border-radius: 20px;
 
-		box-shadow: 0 2px 10px rgba(#000, 0.3);
+		background-color: white;
+		box-shadow: 0 3px 5px rgba(#000, 0.4);
 
-		font-size: 1.5em;
+		font-weight: 500;
+		font-size: 1.4em;
 
-		.iconify {
-			margin-right: 10px;
-			font-size: 2em;
+		.speech,
+		.userText {
+			display: flex;
+			align-items: center;
+		}
+
+		.userText {
+			padding-top: 15px;
+			margin-top: 15px;
+			border-top: 1px solid rgba(#000, 0.3);
+		}
+
+		.app-button {
+			margin-right: 15px;
+			.iconify {
+				font-size: 2em;
+			}
 		}
 	}
 
@@ -312,11 +340,11 @@ export default class VoiceOrder extends Vue {
 
 		&.speakable {
 			animation: indicator 1.5s infinite;
-			background-color: #538fff;
+			background-color: $primary-color;
 		}
 
 		&.recording {
-			background-color: yellowgreen;
+			background-color: #47cf73;
 		}
 	}
 

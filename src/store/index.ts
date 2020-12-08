@@ -21,6 +21,7 @@ export interface RootState {
 	stockList: StockItem[];
 	helloLoop: number;
 	script: string;
+	userText: string;
 }
 
 const store: StoreOptions<RootState> = {
@@ -30,6 +31,7 @@ const store: StoreOptions<RootState> = {
 		stockList: [],
 		helloLoop: 0,
 		script: "",
+		userText: "",
 	},
 	mutations: {
 		activateEarphoneDetection(state) {
