@@ -1,10 +1,10 @@
 <template>
 	<div class="admin">
 		<div class="actions">
-			<app-button round color="default" @click="testNotification">
+			<!-- <app-button round color="default" @click="testNotification">
 				<i class="iconify" data-icon="mdi:bell"></i>
 				알림 테스트
-			</app-button>
+			</app-button> -->
 			<app-button round color="accent" @click="closeApp">
 				<i class="iconify" data-icon="mdi:power"></i>
 				종료
