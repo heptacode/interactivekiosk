@@ -17,6 +17,7 @@ Vue.use(Vuex);
 
 export interface RootState {
 	isElectron: boolean;
+	fcmToken: string;
 	earphoneDetection: boolean;
 	stockList: StockItem[];
 	helloLoop: number;
@@ -27,6 +28,7 @@ export interface RootState {
 const store: StoreOptions<RootState> = {
 	state: {
 		isElectron: process.env.IS_ELECTRON ? true : false,
+		fcmToken: "",
 		earphoneDetection: false,
 		stockList: [],
 		helloLoop: 0,

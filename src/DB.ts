@@ -4,6 +4,8 @@ import "firebase/storage";
 import "@firebase/messaging";
 import "dotenv/config";
 
+import Store from "@/store";
+
 firebase.initializeApp({
 	apiKey: "AIzaSyBPzOY8sn3N9Pyn27tmnLZSTQYrH3RE5CE",
 	authDomain: "interactive-kiosk.firebaseapp.com",
@@ -21,6 +23,7 @@ messaging
 	.getToken({ vapidKey: "BE8_WQxU18fUBK7Q7B3eeoXFJKn_0hDJIZ2E7dT5xZJY6IYYFUz96tv4fL2sJzox8btaFP7b6cH_MtqgJDrPVqE" })
 	.then((currentToken) => {
 		if (currentToken) {
+			Store.state.fcmToken = currentToken;
 			console.log(currentToken);
 		} else {
 			console.log("No registration token available. Request permission to generate one.");

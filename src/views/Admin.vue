@@ -1,10 +1,10 @@
 <template>
 	<div class="admin">
 		<div class="actions">
-			<!-- <app-button round color="default" @click="testNotification">
+			<app-button round color="default" @click="testNotification">
 				<i class="iconify" data-icon="mdi:bell"></i>
 				알림 테스트
-			</app-button> -->
+			</app-button>
 			<app-button round color="accent" @click="closeApp">
 				<i class="iconify" data-icon="mdi:power"></i>
 				종료
@@ -144,6 +144,7 @@ import { Item } from "electron";
 @Component({})
 export default class Admin extends Vue {
 	@State("isElectron") isElectron!: boolean;
+	@State("fcmToken") fcmToken!: string;
 	@State("stockList") stockList!: StockItem[];
 	@State("imageUploadProgress", { namespace: "FirebaseModule" }) imageUploadProgress!: number;
 
@@ -162,7 +163,7 @@ export default class Admin extends Vue {
 	}
 
 	testNotification() {
-		alert("안녕하세요. 이것은 알림입니다.");
+		prompt(this.fcmToken);
 	}
 
 	closeApp() {
