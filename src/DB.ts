@@ -31,6 +31,7 @@ messaging
 	});
 
 messaging.onMessage((payload) => {
+	console.log(payload);
 	alert(payload);
 });
 
