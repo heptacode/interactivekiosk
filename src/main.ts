@@ -11,14 +11,6 @@ import "vue-material/dist/theme/default.css";
 
 import { MdButton, MdContent, MdField, MdProgress, MdTabs, MdRipple, MdCard } from "vue-material/dist/components";
 
-import firebase from "firebase/app";
-import "firebase/firestore";
-
-const messaging = firebase.messaging();
-messaging.onMessage((payload) => {
-	alert(payload);
-});
-
 Vue.config.productionTip = false;
 
 Vue.component("AppButton", AppButton);
