@@ -5,7 +5,7 @@ import "@firebase/messaging";
 import "dotenv/config";
 
 firebase.initializeApp({
-	apiKey: process.env.VUE_APP_FIREBASE_API_KEY,
+	apiKey: "AIzaSyBPzOY8sn3N9Pyn27tmnLZSTQYrH3RE5CE",
 	authDomain: "interactive-kiosk.firebaseapp.com",
 	databaseURL: "https://interactive-kiosk.firebaseio.com",
 	projectId: "interactive-kiosk",
