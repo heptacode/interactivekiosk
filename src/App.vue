@@ -2,7 +2,7 @@
 	<div id="app">
 		<header>
 			<div class="pwa">
-				<app-button v-if="1 /*deferredPrompt*/" circle color="default" @click="showPWA">
+				<app-button v-if="deferredPrompt" circle color="default" @click="showPWA">
 					<i class="iconify" data-icon="mdi:download"></i>
 				</app-button>
 			</div>
