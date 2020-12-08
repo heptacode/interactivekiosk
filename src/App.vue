@@ -1,10 +1,13 @@
 <template>
 	<div id="app">
-		<header v-if="isAdmin">
+		<header v-if="true || isAdmin">
 			<router-link to="/" class="btn-home">
 				<i class="iconify" data-icon="mdi:home" />
 			</router-link>
-			<button class="btn-close" @click="closeWindow">
+			<app-button v-if="deferredPrompt" circle color="default" @click="showPWA">
+				<i class="iconify" data-icon="mdi:download"></i>
+			</app-button>
+			<button v-if="!isMac" class="btn-close" @click="closeWindow">
 				<i class="iconify" data-icon="mdi:close" />
 			</button>
 		</header>
@@ -110,7 +113,7 @@ body {
 
 	header {
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-end;
 		align-items: center;
 
 		position: sticky;
