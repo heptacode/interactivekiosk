@@ -58,6 +58,7 @@ export default class STT extends Vue {
 		console.log("텍스트 변환 시작");
 		try {
 			let text = await this.STT(this.blob);
+			this.$store.state.userText = text;
 			console.log(`변환 데이터: ${text}`);
 
 			this.callback && this.callback(text);
