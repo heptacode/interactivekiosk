@@ -19,6 +19,10 @@ const AudioModule: Module<IAudioModule, RootState> = {
 			if (audio) audio.pause();
 
 			let url: string = data.isLocal ? `/assets/sound/${data.data}.mp3` : data.data;
+
+			// TODO: HOTFIX
+			if (data.data === "voiceorder/earphone_connected") url = "https://kiosk.hyunwoo.dev/assets/sound/voiceorder/earphone_connected.mp3";
+
 			audio = new Audio(url);
 
 			audio.play();
