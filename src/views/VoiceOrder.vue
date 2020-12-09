@@ -105,7 +105,7 @@ export default class VoiceOrder extends Vue {
 
 		this.$store.state.script = script.earphone_connected;
 		await this.playAudio({ isLocal: true, data: "voiceorder/earphone_connected" });
-		// await this.playItems();
+		await this.playItems();
 		this.isOrderProcess = true;
 		this.orderProcess();
 
