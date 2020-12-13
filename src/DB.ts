@@ -2,7 +2,6 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/storage";
 import "@firebase/messaging";
-import "dotenv/config";
 
 import Store from "@/store";
 
@@ -24,7 +23,6 @@ messaging
 	.then((currentToken) => {
 		if (currentToken) {
 			Store.state.fcmToken = currentToken;
-			console.log(currentToken);
 		} else {
 			console.log("No registration token available. Request permission to generate one.");
 		}
