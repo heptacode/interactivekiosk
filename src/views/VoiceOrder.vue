@@ -172,7 +172,7 @@ export default class VoiceOrder extends Vue {
 
 		this.isSpeakable = false;
 
-		if (text === "완료" || text === "종료" || text === "완료") return this.checkout();
+		if (text === "완료" || text === "종료" || text === "만료") return this.checkout();
 
 		try {
 			let split = text.split(new RegExp("(,| )")).filter((data) => data.trim() && data.trim() != ",");
