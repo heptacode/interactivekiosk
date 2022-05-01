@@ -26,6 +26,8 @@
 
 ![InteractiveKiosk](docs/interactivekiosk-screenshot.png)
 
+- [Documentation](https://drive.google.com/file/d/16DlM1dd20kCKLaFSR_IQXlBWSuw54SIi/preview)
+
 ## 기술 스택
 
 ![TypeScript](https://img.shields.io/badge/TypeScript-282C34.svg?&style=for-the-badge&logo=typescript)
