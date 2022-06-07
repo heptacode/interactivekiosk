@@ -22,10 +22,6 @@
                 <div class="md-subhead">{{ numberFormat(item.price) }}원</div>
               </md-card-header>
             </div>
-            <!-- <md-card-actions>
-							<md-button>-</md-button>
-							<md-button>+</md-button>
-						</md-card-actions> -->
           </md-ripple>
         </md-card>
       </div>
@@ -135,11 +131,7 @@ export default class Order extends Vue {
   }
 
   get getTotalPrice(): string {
-    let total = 0;
-    this.shoppingCart.forEach((i) => {
-      total += i.price * i.quantity;
-    });
-    return numberFormat(total);
+    return numberFormat(this.shoppingCart.reduce((total:number, cartItem:StockItem) => total + cartItem.price * cartItem.quantity, 0))
   }
 }
 </script>
