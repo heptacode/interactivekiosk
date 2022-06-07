@@ -5,9 +5,7 @@
         <md-card md-with-hover>
           <md-ripple>
             <md-card-header v-if="!isElectron">
-              <!-- <md-card-media md-ratio="1:1"> -->
               <img :src="item.image" />
-              <!-- </md-card-media> -->
               <md-card-header-text>
                 <div class="md-title">{{ item.name }}</div>
                 <div class="md-subhead">{{ numberFormat(item.price) }}원</div>
@@ -29,21 +27,35 @@
 
     <div class="shoppingCart-container">
       <transition name="fade">
-        <app-button v-if="!shoppingCartVisible && shoppingCart.length && !isElectron" class="shoppingCart-toggle" round @click="shoppingCartVisible = true">
+        <app-button
+          v-if="!shoppingCartVisible && shoppingCart.length && !isElectron"
+          class="shoppingCart-toggle"
+          round
+          @click="shoppingCartVisible = true"
+        >
           <i class="iconify" data-icon="mdi:chevron-up"></i>
           장바구니 열기
         </app-button>
       </transition>
 
       <transition name="fade">
-        <md-card class="shoppingCart" v-if="(shoppingCartVisible && shoppingCart.length) || isElectron">
+        <md-card
+          class="shoppingCart"
+          v-if="(shoppingCartVisible && shoppingCart.length) || isElectron"
+        >
           <div class="shoppingCart-heading">
             <h1>장바구니</h1>
             <app-button v-if="!isElectron" round @click="shoppingCartVisible = false">
               <i class="iconify" data-icon="mdi:chevron-down"></i>
               숨기기
             </app-button>
-            <app-button v-else round color="accent" :disabled="!shoppingCart.length" @click="shoppingCart.splice(0, shoppingCart.length)">
+            <app-button
+              v-else
+              round
+              color="accent"
+              :disabled="!shoppingCart.length"
+              @click="shoppingCart.splice(0, shoppingCart.length)"
+            >
               <i class="iconify" data-icon="mdi:trash"></i>
               비우기
             </app-button>
@@ -61,7 +73,14 @@
             <h3 class="price">{{ numberFormat(item.price * item.quantity) }}원</h3>
           </div>
 
-          <app-button class="checkout" round :disabled="!shoppingCart.length" @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"> {{ getTotalPrice }}원 결제하기 </app-button>
+          <app-button
+            class="checkout"
+            round
+            :disabled="!shoppingCart.length"
+            @click="(shoppingCartVisible = false), (isCheckoutVisible = true)"
+          >
+            {{ getTotalPrice }}원 결제하기
+          </app-button>
         </md-card>
       </transition>
     </div>
@@ -71,14 +90,21 @@
         <md-card class="checkout">
           <div class="checkout-heading">
             <h1>결제하기</h1>
-            <app-button round color="accent" @click="(isCheckoutVisible = false), (shoppingCartVisible = true)">
+            <app-button
+              round
+              color="accent"
+              @click="(isCheckoutVisible = false), (shoppingCartVisible = true)"
+            >
               <i class="iconify" data-icon="mdi:close"></i>
               취소하기
             </app-button>
           </div>
           <img src="/assets/images/credit_card.svg" alt="Credit Card" />
 
-          <h2 class="total">{{ getTotalPrice }}원을 결제하려면 {{ !isElectron ? '결제 수단을 선택해주세요.' : '카드를 삽입해주세요.' }}</h2>
+          <h2 class="total">
+            {{ getTotalPrice }}원을 결제하려면
+            {{ !isElectron ? '결제 수단을 선택해주세요.' : '카드를 삽입해주세요.' }}
+          </h2>
         </md-card>
       </div>
     </transition>
@@ -86,12 +112,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-
 import { StockItem } from '@/schema';
-import { State } from 'vuex-class';
-
 import numberFormat from '@/utils/numberFormat';
+import { Component, Vue } from 'vue-property-decorator';
+import { State } from 'vuex-class';
 
 @Component({})
 export default class Order extends Vue {
@@ -110,28 +134,35 @@ export default class Order extends Vue {
   addItem(item: StockItem) {
     this.shoppingCartVisible = true;
 
-    let prevItem = this.shoppingCart.find((s) => s.name == item.name);
+    let prevItem = this.shoppingCart.find(s => s.name == item.name);
     // 이미 장바구니에 있을 시 개수 +1
     if (prevItem) {
       // 남은 재고량 확인 후 증감
-      if (this.stockList.find((i) => i.name == item.name)!.quantity > prevItem.quantity) prevItem.quantity++;
+      if (this.stockList.find(i => i.name == item.name)!.quantity > prevItem.quantity)
+        prevItem.quantity++;
     } else this.shoppingCart.push({ ...item, quantity: 1 });
   }
   increaseItem(item: StockItem) {
-    let prevItem = this.shoppingCart.find((i) => i.name == item.name);
-    if (this.stockList.find((i) => i.name == item.name)!.quantity > prevItem!.quantity) prevItem!.quantity++;
+    let prevItem = this.shoppingCart.find(i => i.name == item.name);
+    if (this.stockList.find(i => i.name == item.name)!.quantity > prevItem!.quantity)
+      prevItem!.quantity++;
   }
   decreaseItem(item: StockItem) {
-    let prevItem = this.shoppingCart.find((i) => i.name == item.name);
+    let prevItem = this.shoppingCart.find(i => i.name == item.name);
     if (prevItem!.quantity-- <= 1) this.removeItem(item);
   }
   removeItem(item: StockItem) {
-    let prevItemIdx = this.shoppingCart.findIndex((i) => i.name == item.name);
+    let prevItemIdx = this.shoppingCart.findIndex(i => i.name == item.name);
     if (prevItemIdx != -1) this.shoppingCart.splice(prevItemIdx, 1);
   }
 
   get getTotalPrice(): string {
-    return numberFormat(this.shoppingCart.reduce((total:number, cartItem:StockItem) => total + cartItem.price * cartItem.quantity, 0))
+    return numberFormat(
+      this.shoppingCart.reduce(
+        (total: number, cartItem: StockItem) => total + cartItem.price * cartItem.quantity,
+        0
+      )
+    );
   }
 }
 </script>

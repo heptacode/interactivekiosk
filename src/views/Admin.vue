@@ -13,7 +13,9 @@
 
     <h1 class="title">재고 관리</h1>
 
-    <div class="product-info">품목 : {{ stockList.length }}개 / 총 수량 : {{ getTotalQuantity }}개</div>
+    <div class="product-info">
+      품목 : {{ stockList.length }}개 / 총 수량 : {{ getTotalQuantity }}개
+    </div>
 
     <div class="product-container">
       <transition-group name="slide">
@@ -22,29 +24,54 @@
             <md-card-header>
               <label>
                 <img :src="item.image" :alt="item.name" />
-                <input type="file" ref="image" accept="image/*" :disabled="isItemCreating" @change="onImageChange(item.id || '', idx)" style="display:none" />
+                <input
+                  type="file"
+                  ref="image"
+                  accept="image/*"
+                  :disabled="isItemCreating"
+                  @change="onImageChange(item.id || '', idx)"
+                  style="display:none"
+                />
               </label>
             </md-card-header>
             <md-card-content class="product-content">
               <div class="md-layout md-gutter">
                 <md-field class="md-layout-item">
                   <label>제품명</label>
-                  <md-input v-model="item.name" @change="updateItem({ key: 'name', id: item.id, value: item.name })"></md-input>
+                  <md-input
+                    v-model="item.name"
+                    @change="updateItem({ key: 'name', id: item.id, value: item.name })"
+                  ></md-input>
                 </md-field>
                 <md-field class="md-layout-item">
                   <label>별칭 (쉼표로 구분)</label>
-                  <md-input v-model="item.alias" @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"></md-input>
+                  <md-input
+                    v-model="item.alias"
+                    @change="updateItem({ key: 'alias', id: item.id, value: item.alias })"
+                  ></md-input>
                 </md-field>
               </div>
               <div class="md-layout md-gutter">
                 <md-field class="md-layout-item">
                   <label>가격</label>
-                  <span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-                  <md-input type="tel" v-model="item.price" @change="updateItem({ key: 'price', id: item.id, value: item.price })"></md-input>
+                  <span class="md-prefix"
+                    ><i class="iconify" data-icon="mdi:currency-krw"></i
+                  ></span>
+                  <md-input
+                    type="tel"
+                    v-model="item.price"
+                    @change="updateItem({ key: 'price', id: item.id, value: item.price })"
+                  ></md-input>
                 </md-field>
                 <md-field class="md-layout-item">
                   <label>재고 수량</label>
-                  <md-input type="number" v-model="item.quantity" min="0" max="99" @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"></md-input>
+                  <md-input
+                    type="number"
+                    v-model="item.quantity"
+                    min="0"
+                    max="99"
+                    @change="updateItem({ key: 'quantity', id: item.id, value: item.quantity })"
+                  ></md-input>
                   <span class="md-suffix">개</span>
                 </md-field>
               </div>
@@ -61,7 +88,11 @@
               </md-card-actions>
             </md-card-content>
           </md-card>
-          <md-progress-bar v-if="imageUploadIdx === idx" md-mode="determinate" :md-value="imageUploadProgress"></md-progress-bar>
+          <md-progress-bar
+            v-if="imageUploadIdx === idx"
+            md-mode="determinate"
+            :md-value="imageUploadProgress"
+          ></md-progress-bar>
         </div>
       </transition-group>
     </div>
@@ -89,33 +120,73 @@
                   <i class="iconify" data-icon="mdi:image-plus"></i>
                 </span>
                 <img v-else :src="itemCreatorData.image.blobURL" :alt="itemCreatorData.name" />
-                <input type="file" ref="itemCreatorImage" accept="image/*" :disabled="isItemCreating" @change="onItemCreatorImageChange" style="display:none" />
+                <input
+                  type="file"
+                  ref="itemCreatorImage"
+                  accept="image/*"
+                  :disabled="isItemCreating"
+                  @change="onItemCreatorImageChange"
+                  style="display:none"
+                />
               </label>
 
               <div class="md-layout">
                 <md-field>
                   <label>제품명</label>
-                  <md-input v-model="itemCreatorData.name" :disabled="isItemCreating" required></md-input>
+                  <md-input
+                    v-model="itemCreatorData.name"
+                    :disabled="isItemCreating"
+                    required
+                  ></md-input>
                 </md-field>
                 <md-field>
                   <label>별칭 (쉼표로 구분)</label>
-                  <md-input v-model="itemCreatorData.alias" :disabled="isItemCreating" required></md-input>
+                  <md-input
+                    v-model="itemCreatorData.alias"
+                    :disabled="isItemCreating"
+                    required
+                  ></md-input>
                 </md-field>
                 <md-field class="md-layout-item" style="padding-left: 0">
                   <label>가격</label>
-                  <span class="md-prefix"><i class="iconify" data-icon="mdi:currency-krw"></i></span>
-                  <md-input type="tel" v-model="itemCreatorData.price" :disabled="isItemCreating" required></md-input>
+                  <span class="md-prefix"
+                    ><i class="iconify" data-icon="mdi:currency-krw"></i
+                  ></span>
+                  <md-input
+                    type="tel"
+                    v-model="itemCreatorData.price"
+                    :disabled="isItemCreating"
+                    required
+                  ></md-input>
                 </md-field>
                 <md-field class="md-layout-item">
                   <label>재고 수량</label>
-                  <md-input type="number" v-model="itemCreatorData.quantity" min="0" max="99" :disabled="isItemCreating" required></md-input>
+                  <md-input
+                    type="number"
+                    v-model="itemCreatorData.quantity"
+                    min="0"
+                    max="99"
+                    :disabled="isItemCreating"
+                    required
+                  ></md-input>
                   <span class="md-suffix">개</span>
                 </md-field>
               </div>
             </div>
 
             <md-card-actions>
-              <app-button type="submit" class="submit" round :disabled="!itemCreatorData.name || !itemCreatorData.alias || !itemCreatorData.price || !itemCreatorData.quantity || isItemCreating">
+              <app-button
+                type="submit"
+                class="submit"
+                round
+                :disabled="
+                  !itemCreatorData.name ||
+                    !itemCreatorData.alias ||
+                    !itemCreatorData.price ||
+                    !itemCreatorData.quantity ||
+                    isItemCreating
+                "
+              >
                 {{ !isItemCreating ? '완료' : '기다리십시오 ...' }}
               </app-button>
             </md-card-actions>
@@ -127,13 +198,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-
-import { StockItem, ItemCreatorData } from '@/schema';
-import { Action, State } from 'vuex-class';
-
-import numberFormat from '@/utils/numberFormat';
+import { ItemCreatorData, StockItem } from '@/schema';
 import imageToBase64 from '@/utils/imageToBase64';
+import numberFormat from '@/utils/numberFormat';
+import { Component, Vue } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 
 @Component({})
 export default class Admin extends Vue {
@@ -205,7 +274,8 @@ export default class Admin extends Vue {
   }
 
   async onItemCreatorImageChange() {
-    if (this.itemCreatorData.image && this.itemCreatorData.image.blobURL !== '') URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
+    if (this.itemCreatorData.image && this.itemCreatorData.image.blobURL !== '')
+      URL.revokeObjectURL(this.itemCreatorData.image.blobURL);
 
     let imageDOM = this.$refs.itemCreatorImage['files'][0];
     let blobURL = URL.createObjectURL(imageDOM);

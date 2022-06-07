@@ -1,5 +1,5 @@
 const numberFormat = (number: number): string => {
-	return new Intl.NumberFormat().format(number);
+  return new Intl.NumberFormat().format(number);
 };
 
 export default numberFormat;

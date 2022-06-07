@@ -1,15 +1,15 @@
+import { db } from '@/DB';
+import { StockItem } from '@/schema';
 import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
-import { StockItem } from '@/schema';
-import { db } from '@/DB';
 
 import { firestoreAction, vuexfireMutations } from 'vuexfire';
 
-import CryptoJS from 'crypto-js';
 import axios from 'axios';
+import CryptoJS from 'crypto-js';
 
-import AudioModule, { IAudioModule } from './modules/AudioModule';
-import FirebaseModule, { IFirebaseModule } from './modules/FirebaseModule';
+import AudioModule from './modules/AudioModule';
+import FirebaseModule from './modules/FirebaseModule';
 
 const script = require('@/lib/script.json');
 
@@ -52,11 +52,14 @@ const store: StoreOptions<RootState> = {
       unbindFirestoreRef('stockList');
     }),
     startHelloLoop({ state, dispatch }) {
-      state.helloLoop = window.setInterval(() => dispatch('AudioModule/playAudio', { isLocal: true, data: 'home/hello' }), 16000);
+      state.helloLoop = window.setInterval(
+        () => dispatch('AudioModule/playAudio', { isLocal: true, data: 'home/hello' }),
+        16000
+      );
     },
     async playItems({ state, dispatch }): Promise<boolean> {
       let stockList: string = '';
-      state.stockList.forEach((item) => {
+      state.stockList.forEach(item => {
         stockList += `${item.name}, `;
       });
       state.script = script.item_list;
@@ -82,15 +85,20 @@ const store: StoreOptions<RootState> = {
     },
     async TTS({ dispatch }, text: string): Promise<any> {
       try {
-        let checksum = CryptoJS.MD5(`3134${text}${process.env.VUE_APP_TTSACCOUNT}${process.env.VUE_APP_TTSID}${process.env.VUE_APP_TTSSECRET}`).toString();
+        let checksum = CryptoJS.MD5(
+          `3134${text}${process.env.VUE_APP_TTSACCOUNT}${process.env.VUE_APP_TTSID}${process.env.VUE_APP_TTSSECRET}`
+        ).toString();
 
         let result: Blob = (
-          await axios.get(`http://www.vocalware.com/tts/gen.php?EID=3&LID=13&VID=4&TXT=${text}&ACC=${process.env.VUE_APP_TTSACCOUNT}&API=${process.env.VUE_APP_TTSID}&CS=${checksum}`, {
-            responseType: 'blob',
-            headers: {
-              'Content-Type': 'audio/mp3',
-            },
-          })
+          await axios.get(
+            `http://www.vocalware.com/tts/gen.php?EID=3&LID=13&VID=4&TXT=${text}&ACC=${process.env.VUE_APP_TTSACCOUNT}&API=${process.env.VUE_APP_TTSID}&CS=${checksum}`,
+            {
+              responseType: 'blob',
+              headers: {
+                'Content-Type': 'audio/mp3',
+              },
+            }
+          )
         ).data;
 
         let url = URL.createObjectURL(result);
