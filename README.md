@@ -64,4 +64,4 @@
 
 ## 기여하기
 
-- [Issues](https://github.com/circlesapp/circles/issues)
+- [Issues](https://github.com/heptacode/interactivekiosk/issues)
